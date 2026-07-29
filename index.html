@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e85382">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="JOYA工作台">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>JOYA 工作台</title>
+<style>
+  :root {
+    --bg:#f7f6f3; --sidebar-bg:#ffffff; --text:#1f2330; --text-secondary:#6b7280;
+    --accent:#e85382; --accent-soft:#fdf2f8; --border:#ececec; --hover:#f3f4f6; --active:#fee2ef;
+    --radius:12px;
+    --green-up:#16a34a;      /* 国际：涨=绿 */
+    --red-down:#dc2626;      /* 国际：跌=红 */
+    --cn-up:#cf1322;         /* A股：涨=红 */
+    --cn-down:#389e0d;       /* A股：跌=绿 */
+    --blue:#2563eb; --orange:#ea580c; --purple:#7c3aed;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--text); display:flex; min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @media (max-width:760px){ body{display:block;} }
+
+  /* ===== SIDEBAR (desktop) ===== */
+  .sidebar{
+    width:236px; flex-shrink:0; background:var(--sidebar-bg); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto;
+  }
+  .sidebar-brand{ padding:22px 22px 16px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); }
+  .brand-logo{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg,var(--accent),#a855f7); color:#fff; font-weight:800; font-size:20px; display:flex; align-items:center; justify-content:center; }
+  .brand-name{ font-size:17px; font-weight:700; letter-spacing:-0.3px; }
+  .brand-sub{ font-size:11px; color:var(--text-secondary); margin-top:1px; }
+  .nav{ padding:14px 12px; flex:1; }
+  .nav-group-label{ font-size:10px; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; padding:10px 12px 6px; }
+  .nav-item{ display:flex; align-items:center; gap:11px; padding:12px; border-radius:9px; cursor:pointer; font-size:14px; color:var(--text); margin-bottom:3px; transition:background .15s; user-select:none; }
+  .nav-item:hover{ background:var(--hover); }
+  .nav-item.active{ background:var(--active); color:var(--accent); font-weight:600; }
+  .nav-item .ico{ font-size:18px; width:22px; text-align:center; }
+  .nav-parent .arrow{ margin-left:auto; transition:transform .2s; font-size:12px; color:#9ca3af; }
+  .nav-parent.collapsed .arrow{ transform:rotate(-90deg); }
+  .sub-nav{ overflow:hidden; }
+  .sub-nav.hidden{ display:none; }
+  .sub-item{ display:flex; align-items:center; gap:10px; padding:9px 12px 9px 47px; border-radius:9px; cursor:pointer; font-size:13px; color:var(--text-secondary); margin-bottom:2px; transition:background .15s; user-select:none; position:relative; }
+  .sub-item:hover{ background:var(--hover); }
+  .sub-item.active{ background:var(--active); color:var(--accent); font-weight:600; }
+  .sub-item::before{ content:''; position:absolute; left:32px; top:50%; width:7px; height:7px; border-radius:50%; background:#d1d5db; transform:translateY(-50%); }
+  .sub-item.active::before{ background:var(--accent); }
+  .sidebar-footer{ padding:14px 22px; font-size:11px; color:#b0b0b0; border-top:1px solid var(--border); }
+
+  /* ===== MAIN ===== */
+  .main{ flex:1; display:flex; flex-direction:column; min-width:0; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 28px; background:var(--sidebar-bg); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
+  .topbar-left .page-title{ font-size:19px; font-weight:700; }
+  .topbar-left .page-sub{ font-size:12px; color:var(--text-secondary); margin-top:2px; }
+  .topbar-right{ text-align:right; }
+  .clock{ font-size:21px; font-weight:700; letter-spacing:-0.3px; font-variant-numeric:tabular-nums; }
+  .date-str{ font-size:12px; color:var(--text-secondary); }
+  .content{ padding:22px 28px; flex:1; overflow-y:auto; }
+  .panel{ display:none; animation:fade .25s ease; }
+  .panel.active{ display:block; }
+  @keyframes fade{ from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
+
+  /* ===== CARDS ===== */
+  .card{ background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin-bottom:16px; }
+  .card-title{ font-size:15px; font-weight:700; margin-bottom:13px; display:flex; align-items:center; gap:8px; }
+  .card-title .bar{ width:4px; height:16px; border-radius:3px; background:var(--accent); }
+  .section-title{ font-size:13px; font-weight:700; color:var(--accent); margin:16px 0 9px; display:flex; align-items:center; gap:6px; }
+  .section-title::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); }
+
+  /* index boxes */
+  .index-row{ display:flex; gap:13px; flex-wrap:wrap; }
+  .index-box{ flex:1; min-width:108px; padding:13px 15px; border-radius:10px; background:#fafafa; border:1px solid var(--border); }
+  .index-name{ font-size:12px; color:var(--text-secondary); margin-bottom:5px; }
+  .index-price{ font-size:21px; font-weight:700; }
+  .index-change{ font-size:13px; margin-top:3px; }
+  /* A股：红涨绿跌 */
+  .index-box.ashare-up{ background:#fff1f0; border-color:#ffccc7; }
+  .index-box.ashare-up .index-price, .index-box.ashare-up .index-change{ color:var(--cn-up); }
+  .index-box.ashare-down{ background:#f6ffed; border-color:#b7eb8f; }
+  .index-box.ashare-down .index-price, .index-box.ashare-down .index-change{ color:var(--cn-down); }
+  /* 国际：绿涨红跌 */
+  .index-box.up{ background:#f0fdf4; border-color:#d3f4dd; }
+  .index-box.up .index-price, .index-box.up .index-change{ color:var(--green-up); }
+  .index-box.down{ background:#fef2f2; border-color:#fbd5d5; }
+  .index-box.down .index-price, .index-box.down .index-change{ color:var(--red-down); }
+
+  .news-item{ padding:11px 0; border-bottom:1px dashed var(--border); font-size:13px; line-height:1.7; }
+  .news-item:last-child{ border-bottom:none; }
+  .news-tag{ display:inline-block; font-size:10px; padding:2px 7px; border-radius:5px; margin-right:7px; font-weight:600; vertical-align:middle; }
+  .tag-macro{ background:#dbeafe; color:#1e40af; }
+  .tag-us{ background:#fee2e2; color:#991b1b; }
+  .tag-a{ background:#fef3c7; color:#92400e; }
+  .tag-oil{ background:#e0f2fe; color:#075985; }
+
+  .chip-row{ display:flex; gap:7px; flex-wrap:wrap; margin-top:6px; }
+  .chip{ font-size:12px; padding:5px 11px; border-radius:14px; font-weight:500; }
+  .chip.ashare-up{ background:#fff1f0; color:var(--cn-up); border:1px solid #ffccc7; }
+  .chip.ashare-down{ background:#f6ffed; color:var(--cn-down); border:1px solid #b7eb8f; }
+  .chip.up{ background:#dcfce7; color:#166534; }
+  .chip.down{ background:#fee2e2; color:#991b1b; }
+
+  .mini-table{ width:100%; font-size:13px; border-collapse:collapse; }
+  .mini-table th{ text-align:left; padding:9px 10px; background:#fafafa; color:var(--text-secondary); font-weight:500; font-size:12px; border-bottom:1px solid var(--border); }
+  .mini-table td{ padding:9px 10px; border-bottom:1px solid var(--border); }
+
+  .callout{ padding:12px 14px; border-radius:9px; font-size:12.5px; line-height:1.7; margin:10px 0; }
+  .callout.warn{ background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; }
+  .callout.info{ background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; }
+  .callout.key{ background:#fdf2f8; border:1px solid #fbcfe8; color:#9d174d; }
+
+  /* ===== KIDS ===== */
+  .word-grid{ display:flex; gap:10px; flex-wrap:wrap; }
+  .word-card{ flex:1; min-width:76px; padding:12px 8px; border-radius:10px; background:var(--accent-soft); text-align:center; border:1px solid #fce7f3; }
+  .word-emoji{ font-size:30px; }
+  .word-en{ font-size:14px; font-weight:700; margin-top:5px; color:#be185d; }
+  .word-zh{ font-size:11px; color:#9d174d; margin-top:2px; }
+  .phrase-box{ padding:12px 14px; border-radius:9px; background:#fff7ed; border:1px solid #ffedd5; font-size:13px; line-height:1.9; }
+  .phrase-box .en{ font-weight:600; color:#c2410c; }
+  .phrase-box .zh{ color:#9a3412; font-size:12px; }
+  .song-box{ padding:12px 14px; border-radius:9px; background:#f0fdf4; border:1px solid #dcfce7; font-size:12.5px; line-height:1.8; }
+  .schedule-table{ width:100%; font-size:13px; border-collapse:collapse; }
+  .schedule-table td{ padding:9px 10px; border-bottom:1px solid var(--border); }
+  .schedule-table td:first-child{ font-weight:600; white-space:nowrap; color:var(--accent); width:120px; }
+
+  /* ===== ADULT ===== */
+  .phrase-of-day{ padding:16px; border-radius:10px; background:linear-gradient(135deg,#faf5ff,#f3e8ff); border:1px solid #e9d5ff; text-align:center; margin-bottom:14px; }
+  .phrase-of-day .main{ font-size:17px; font-weight:700; color:#7c3aed; }
+  .phrase-of-day .trans{ font-size:12px; color:#6b21a8; margin-top:4px; }
+  .scene-card{ padding:13px 15px; border-radius:9px; margin-bottom:11px; border:1px solid var(--border); background:#fafafa; }
+  .scene-title{ font-size:13.5px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+  .dialogue-line{ font-size:12.5px; margin-bottom:5px; padding-left:6px; }
+  .dialogue-line .speaker{ font-weight:600; color:var(--purple); }
+  .dialogue-line .zh-text{ color:var(--text-secondary); font-size:11.5px; display:block; margin-left:6px; }
+  .tip-bubble{ padding:11px 15px; border-radius:20px; background:#eef2ff; border:1px solid #c7d2fe; font-size:12.5px; line-height:1.7; margin-top:6px; }
+
+  /* ===== XHS ===== */
+  .xhs-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:15px; }
+  .xhs-post{ padding:15px; border-radius:10px; background:#fff5f5; border:1px solid #fecaca; }
+  .xhs-post .hook{ font-size:14px; font-weight:700; color:#b91c1c; margin-bottom:6px; line-height:1.5; }
+  .xhs-post .body-text{ font-size:12.5px; line-height:1.85; color:#4a4a5a; }
+  .xhs-tags{ margin-top:9px; display:flex; gap:5px; flex-wrap:wrap; }
+  .xhs-tag{ font-size:10px; padding:2px 9px; border-radius:10px; background:#fff; border:1px solid #fca5a5; color:#dc2626; }
+  .xhs-tip{ padding:10px 14px; border-radius:9px; font-size:12px; background:#fefce8; border:1px solid #fef08a; color:#854d0e; margin-bottom:14px; }
+  .template-card{ padding:13px 15px; border-radius:9px; background:#fafafa; border:1px solid var(--border); font-size:13px; line-height:1.85; margin-bottom:10px; }
+  .template-card strong{ color:var(--orange); }
+
+  /* ===== CHECKLIST (daily tracking) ===== */
+  .checklist-title{ font-size:13px; font-weight:700; color:var(--accent); margin:4px 0 10px; display:flex; align-items:center; gap:6px; }
+  .checklist-title::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); }
+  .check-item{ display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom:7px; border:1px solid var(--border); border-radius:9px; background:#fafafa; cursor:pointer; font-size:13.5px; transition:all .15s; }
+  .check-item:active{ background:var(--hover); }
+  .check-item input{ width:18px; height:18px; accent-color:var(--accent); flex-shrink:0; }
+  .check-item .ci-label{ flex:1; }
+  .check-item.done{ background:#f0fdf4; border-color:#bbf7d0; }
+  .check-item.done .ci-label{ color:var(--cn-down); text-decoration:line-through; }
+  .check-progress{ font-size:12px; color:var(--text-secondary); margin-bottom:10px; }
+  .check-progress b{ color:var(--accent); }
+
+  .footer-note{ text-align:center; padding:16px; font-size:11px; color:#b8b8b8; }
+
+  /* ===== MOBILE SUBTABS ===== */
+  .mobile-subtabs{ display:none; }
+  /* ===== BOTTOM NAV (mobile) ===== */
+  .bottom-nav{ display:none; }
+
+  @media (max-width:760px){
+    .sidebar{ display:none; }
+    .topbar{ padding:12px 16px; position:sticky; top:0; }
+    .topbar-left .page-title{ font-size:16px; }
+    .clock{ font-size:17px; }
+    .content{ padding:14px 14px 90px; }
+    .card{ padding:15px 15px; }
+    .index-box{ min-width:46%; }
+    .mobile-subtabs.visible{
+      display:flex; gap:8px; overflow-x:auto; padding:10px 14px; background:#fff;
+      border-bottom:1px solid var(--border); position:sticky; top:58px; z-index:9; -webkit-overflow-scrolling:touch;
+    }
+    .mobile-subtabs button{
+      flex-shrink:0; padding:7px 14px; border-radius:16px; border:1px solid var(--border);
+      background:#fff; font-size:12px; color:var(--text-secondary); white-space:nowrap; cursor:pointer;
+    }
+    .mobile-subtabs button.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+    .bottom-nav{
+      display:flex; position:fixed; bottom:0; left:0; right:0; background:#fff;
+      border-top:1px solid var(--border); z-index:30; padding-bottom:env(safe-area-inset-bottom);
+    }
+    .bottom-tab{
+      flex:1; padding:9px 4px 7px; border:none; background:none; font-size:10.5px;
+      color:var(--text-secondary); display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer;
+    }
+    .bottom-tab .ico{ font-size:21px; }
+    .bottom-tab.active{ color:var(--accent); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">J</div>
+    <div><div class="brand-name">JOYA 工作台</div><div class="brand-sub">每日一站式助手</div></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-group-label">目录</div>
+    <div class="nav-item nav-parent active" id="nav-stock" onclick="toggleParent('stock')">
+      <span class="ico">📈</span><span class="lbl">股票行情</span><span class="arrow">▾</span>
+    </div>
+    <div class="sub-nav" id="sub-stock">
+      <div class="sub-item active" data-panel="ashare" onclick="selectPanel(this)"><span class="lbl">A股盘中行情</span></div>
+      <div class="sub-item" data-panel="overnight" onclick="selectPanel(this)"><span class="lbl">隔夜晚间新闻</span></div>
+      <div class="sub-item" data-panel="usnight" onclick="selectPanel(this)"><span class="lbl">美股夜盘情况</span></div>
+      <div class="sub-item" data-panel="macro" onclick="selectPanel(this)"><span class="lbl">全球宏观经济</span></div>
+    </div>
+    <div class="nav-item" data-panel="kids" onclick="selectPanel(this)">
+      <span class="ico">🎈</span><span class="lbl">幼儿英语</span>
+    </div>
+    <div class="nav-item" data-panel="adult" onclick="selectPanel(this)">
+      <span class="ico">💬</span><span class="lbl">每日英语</span>
+    </div>
+    <div class="nav-item" data-panel="xhs" onclick="selectPanel(this)">
+      <span class="ico">🏰</span><span class="lbl">爆款文案</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">数据更新于 2026-07-29 14:54<br>仅供参考 · JOYA v3.0</div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-title" id="pageTitle">A股盘中行情</div>
+      <div class="page-sub" id="pageSub">实时盘中数据 · 2026年7月29日</div>
+    </div>
+    <div class="topbar-right">
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="date-str" id="dateStr"></div>
+    </div>
+  </div>
+
+  <!-- mobile sub-tabs for 股票行情 -->
+  <div class="mobile-subtabs" id="mobileSubtabs">
+    <button data-panel="ashare" class="active" onclick="selectPanel(this)">盘中</button>
+    <button data-panel="overnight" onclick="selectPanel(this)">隔夜</button>
+    <button data-panel="usnight" onclick="selectPanel(this)">美股</button>
+    <button data-panel="macro" onclick="selectPanel(this)">宏观</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== A股盘中行情 ===== -->
+    <section class="panel active" id="panel-ashare">
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>A股三大指数 · 盘中</div>
+        <div class="index-row">
+          <div class="index-box ashare-up" data-code="sh000001" data-market="ashare">
+            <div class="index-name">上证指数</div>
+            <div class="index-price">3,821.02</div>
+            <div class="index-change">▲ +7.71 (+0.20%)</div>
+          </div>
+          <div class="index-box ashare-up" data-code="sz399001" data-market="ashare">
+            <div class="index-name">深证成指</div>
+            <div class="index-price">13,621.36</div>
+            <div class="index-change">▲ +111.68 (+0.83%)</div>
+          </div>
+          <div class="index-box ashare-up" data-code="sz399006" data-market="ashare">
+            <div class="index-name">创业板指</div>
+            <div class="index-price">3,374.20</div>
+            <div class="index-change">▲ +46.68 (+1.42%)</div>
+          </div>
+        </div>
+        <p style="font-size:13px;margin-top:12px;color:var(--text-secondary);line-height:1.7;">
+          数据时间 <strong id="ashare-time">2026-07-29 14:39</strong> · 午后全线翻红，两市上涨个股超 <strong style="color:var(--cn-up);">4,400</strong> 只，成交约 <strong>2,113亿</strong>。<br>
+          沪深300、科创综指跟随回暖，北向资金小幅净流入。
+        </p>
+        <div class="callout warn" style="margin-top:10px;">
+          ⚠️ <strong>7月累计：</strong>上证 <strong style="color:var(--cn-up);">-6.68%</strong> ｜ 深证 <span style="color:var(--cn-down);font-weight:600;">-15.95%</span>（月度振幅 18.91%），月线承压明显。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>板块涨跌分布</div>
+        <div class="section-title">领涨板块（红）</div>
+        <div class="chip-row">
+          <span class="chip ashare-up">🥛 乳业</span>
+          <span class="chip ashare-up">📚 教育</span>
+          <span class="chip ashare-up">🎮 游戏</span>
+          <span class="chip ashare-up">🥇 贵金属</span>
+          <span class="chip ashare-up">🍔 食品饮料</span>
+          <span class="chip ashare-up">🚗 汽车</span>
+          <span class="chip ashare-up">🏦 券商</span>
+        </div>
+        <div class="section-title">领跌板块（绿）</div>
+        <div class="chip-row">
+          <span class="chip ashare-down">🔬 光刻机</span>
+          <span class="chip ashare-down">💾 存储芯片</span>
+          <span class="chip ashare-down">🧠 脑机接口</span>
+          <span class="chip ashare-down">📡 CPO</span>
+        </div>
+        <div class="callout info" style="margin-top:12px;">
+          📌 大消费全面活跃（食品饮料/零售领涨）；创业板V型反转，早盘跌超2% → 午后涨超2%；小盘股持续跑赢大盘股，风格切换迹象明显。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>盘中要点</div>
+        <div class="news-item"><span class="news-tag tag-a">盘面</span>三元股份午后涨停，乳业链带动大消费情绪升温。</div>
+        <div class="news-item"><span class="news-tag tag-a">游戏</span>恺英网络、巨人网络、世纪华通涨停，板块资金净流入居前。</div>
+        <div class="news-item"><span class="news-tag tag-a">贵金属</span>西部黄金涨超5%，避险+央行购金逻辑延续。</div>
+        <div class="news-item"><span class="news-tag tag-a">券商</span>华林证券直线涨停，大金融午后走高护盘。</div>
+      </div>
+    </section>
+
+    <!-- ===== 隔夜晚间新闻 ===== -->
+    <section class="panel" id="panel-overnight">
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>隔夜要闻 · 2026年7月28日（美东）</div>
+        <div class="news-item"><span class="news-tag tag-macro">美联储</span><strong>7月议息会议周二开启</strong>，为期两天，利率决议将于<strong>北京时间7月30日凌晨2:00</strong>公布。市场普遍预期维持3.50%-3.75%不变，本次不更新点阵图，焦点在声明措辞与发布会。</div>
+        <div class="news-item"><span class="news-tag tag-oil">地缘</span><strong>美伊暂停军事冲突</strong>，特朗普确认两国已展开外交对话。油价应声大跌——WTI收79.26美元(-4.06%)，布伦特84.09美元(-4.83%)，通胀压力阶段性缓和。</div>
+        <div class="news-item"><span class="news-tag tag-us">经济</span>美国7月消费者信心指数 <strong>90.8</strong>，低于6月修正值92.2；5月房价指数环比+0.1%~+0.3%，略超预期。CME FedWatch定价<strong>9月加息25bp</strong>概率升温。</div>
+        <div class="news-item"><span class="news-tag tag-us">个股</span>苹果盘中市值一度突破 <strong>5万亿美元</strong>，超越英伟达重回全球第一；可口可乐+5%（2009年来最佳单日），福特上调全年盈利指引。</div>
+        <div class="news-item"><span class="news-tag tag-us">财报周</span>微软、Meta 北京时间周四凌晨盘后披露；苹果、亚马逊周五凌晨跟上，标普500约34%市值本周集中交卷。</div>
+        <div class="news-item"><span class="news-tag tag-macro">科技监管</span>英伟达被曝拟为 OpenAI 高达2500亿美元算力扩建提供融资支持，"供应商融资"模式引发2000年思科式担忧，芯片股承压。</div>
+        <div class="callout key">💡 <strong>隔夜定调：</strong>地缘降温→油价回落→美联储获喘息空间；但财报季才是本周真正主导变量，AI资本开支与现金流指引将正面回应泡沫质疑。</div>
+      </div>
+    </section>
+
+    <!-- ===== 美股夜盘情况 ===== -->
+    <section class="panel" id="panel-usnight">
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>美股收盘 · 2026年7月28日（绿涨红跌）</div>
+        <div class="index-row">
+          <div class="index-box up" data-code="usDJI" data-market="us">
+            <div class="index-name">道琼斯</div>
+            <div class="index-price">52,747.32</div>
+            <div class="index-change">▲ +537.24 (+1.03%)</div>
+          </div>
+          <div class="index-box up" data-code="usINX" data-market="us">
+            <div class="index-name">标普500</div>
+            <div class="index-price">7,428.78</div>
+            <div class="index-change">▲ +15.60 (+0.21%)</div>
+          </div>
+          <div class="index-box down" data-code="usIXIC" data-market="us">
+            <div class="index-name">纳斯达克</div>
+            <div class="index-price">24,876.91</div>
+            <div class="index-change">▼ -55.17 (-0.22%)</div>
+          </div>
+        </div>
+        <p style="font-size:13px;margin-top:12px;color:var(--text-secondary);line-height:1.7;">
+          三大指数涨跌不一：<strong style="color:var(--green-up);">道指领涨(+1.03%)</strong>，资金轮动撤离半导体转向防御与实体板块；纳指小幅收跌。标普11大板块七涨四跌。
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>板块与个股表现</div>
+        <div class="section-title">板块强弱</div>
+        <div class="chip-row">
+          <span class="chip up">🩺 医疗 +2.33%</span>
+          <span class="chip up">🛒 必需消费 +1.96%</span>
+          <span class="chip down">⚡ 能源 -1.40%</span>
+          <span class="chip down">💻 科技 -1.17%</span>
+        </div>
+        <div class="section-title">重点个股</div>
+        <table class="mini-table">
+          <tr><th>个股</th><th>表现</th><th>原因</th></tr>
+          <tr><td>🍎 苹果</td><td style="color:var(--green-up);font-weight:600;">+0.9%</td><td>市值一度破5万亿美元登顶全球第一</td></tr>
+          <tr><td>🥤 可口可乐</td><td style="color:var(--green-up);font-weight:600;">+5.0%</td><td>业绩超预期，2009年来最佳单日</td></tr>
+          <tr><td>✈️ 波音</td><td style="color:var(--green-up);font-weight:600;">上涨</td><td>季报向好</td></tr>
+          <tr><td>💾 美光</td><td style="color:var(--red-down);font-weight:600;">-8.85%</td><td>芯片股延续跌势</td></tr>
+          <tr><td>🔧 AMD</td><td style="color:var(--red-down);font-weight:600;">-8.15%</td><td>半导体抛压</td></tr>
+          <tr><td>🧠 英特尔</td><td style="color:var(--red-down);font-weight:600;">-5.86%</td><td>资本开支担忧</td></tr>
+        </table>
+        <div class="callout warn" style="margin-top:12px;">
+          ⚠️ <strong>风险点：</strong>芯片股连续承压（美光/AMD/英特尔领跌），"AI资金闭环"质疑首次被主流资金认真定价；小盘股(Russell 2000)年内+18.8%跑赢纳指(+7.3%)，风格切换持续。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>大宗商品 & 汇率</div>
+        <table class="mini-table">
+          <tr><th>品种</th><th>最新</th><th>涨跌</th></tr>
+          <tr><td>🛢️ WTI原油</td><td>79.26美元</td><td style="color:var(--green-up);font-weight:600;">-4.06%</td></tr>
+          <tr><td>🛢️ 布伦特原油</td><td>84.09美元</td><td style="color:var(--green-up);font-weight:600;">-4.83%</td></tr>
+          <tr><td>📈 美元指数</td><td>~101.5</td><td>回落</td></tr>
+          <tr><td>💱 离岸人民币</td><td>6.7652</td><td style="color:var(--green-up);font-weight:600;">创6月中以来最强</td></tr>
+          <tr><td>📉 美10年国债</td><td>4.69%</td><td>从高位回落</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== 全球宏观经济 ===== -->
+    <section class="panel" id="panel-macro">
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>每日全球宏观经济新闻 & 分析</div>
+        <div class="news-item"><span class="news-tag tag-macro">全球增长</span>IMF 将2026年全球增长预期下调至 <strong>3.0%</strong>（受中东战事冲击）；但<strong style="color:var(--green-up);">逆势上调中国至4.6%</strong>（+0.2pct），高技术制造业与出口是主引擎。世行对中国2026年预期4.4%。</div>
+        <div class="news-item"><span class="news-tag tag-macro">美联储</span>利率维持3.50%-3.75%。6月CPI同比3.5%、核心2.8%，通胀降温但未达目标。沃什改革削弱前瞻指引，美债失去稳定预期锚，波动率定价成新常态。</div>
+        <div class="news-item"><span class="news-tag tag-macro">欧洲</span>欧央行7月23日维持2.25%不变，市场预判9月或加息；英国转向加息预期（11月+25bp至4.00%）。德国5月出口+0.9%超预期，对美出口+23.1%。</div>
+        <div class="news-item"><span class="news-tag tag-macro">日本</span>日银维持1.00%不变，10月或小幅加息。日元163.7仍处低位，美日利差持续施压。名义工资连续4个月增超3%，但消费连6月下滑。</div>
+        <div class="news-item"><span class="news-tag tag-macro">中国</span>CPI同比+1.0%，PPI同比+4.1%；LPR连14月不变（1年3.0%/5年3.5%）；外汇储备34,163亿美元；黄金储备连续20月增持至7,544万盎司。</div>
+        <div class="news-item"><span class="news-tag tag-us">债务</span>美国公共债务达 <strong>39.07万亿美元</strong>，2026年利息支出预计首破1万亿美元。AI驱动的内存/软件/电价涨价令核心PCE提升0.2pct。</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>宏观研判（分析师视角）</div>
+        <div class="callout info"><strong>① 主线：</strong>全球增长放缓（IMF 3.0%）+ 通胀粘性回升，央行"谨慎观望、数据依赖"成为共识。美联储是紧缩锚点，9月加息概率约65%。</div>
+        <div class="callout info"><strong>② 中国相对优势：</strong>IMF/世行双双上调中国增长预期，高技术制造与出口韧性修复外资对A/H股悲观预期，人民币温和升值是中期趋势。</div>
+        <div class="callout warn"><strong>③ 风险传导：</strong>美债波动率中枢抬升 → 北向资金、港股、中资美元债波动加大；A股单边趋势概率下降，极致结构性分化是长期主线。建议增配短端利率债、优质制造信用债，减少境外美元债敞口。</div>
+        <div class="callout key"><strong>④ 本周关键窗口：</strong>7/30美联储决议 + 微软/Meta/苹果/亚马逊财报密集披露。央行给不了答案，<strong>财务报表里的资本开支指引与现金流</strong>才能正面回应AI泡沫质疑。</div>
+      </div>
+    </section>
+
+    <!-- ===== 幼儿英语 ===== -->
+    <section class="panel" id="panel-kids">
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>今日打卡</div>
+        <div class="check-progress" id="kidsProgress"></div>
+        <div class="check-item" data-id="kids_word"><input type="checkbox"><span class="ci-label">📇 今日单词闪卡（5个）</span></div>
+        <div class="check-item" data-id="kids_song"><input type="checkbox"><span class="ci-label">🎵 儿歌磨耳朵</span></div>
+        <div class="check-item" data-id="kids_book"><input type="checkbox"><span class="ci-label">📖 绘本共读</span></div>
+        <div class="check-item" data-id="kids_tpr"><input type="checkbox"><span class="ci-label">🤸 TPR指令游戏</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>今日核心单词（5个）</div>
+        <div class="word-grid">
+          <div class="word-card"><div class="word-emoji">🐶</div><div class="word-en">dog</div><div class="word-zh">狗狗</div></div>
+          <div class="word-card"><div class="word-emoji">🍎</div><div class="word-en">apple</div><div class="word-zh">苹果</div></div>
+          <div class="word-card"><div class="word-emoji">🚗</div><div class="word-en">car</div><div class="word-zh">汽车</div></div>
+          <div class="word-card"><div class="word-emoji">📖</div><div class="word-en">book</div><div class="word-zh">书本</div></div>
+          <div class="word-card"><div class="word-emoji">⭐</div><div class="word-en">star</div><div class="word-zh">星星</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>简单对话 & 儿歌</div>
+        <div class="phrase-box" style="margin-bottom:12px;">
+          <span class="en">👩 "Hello! How are you?"</span> <span class="zh">你好！你今天好吗？</span><br>
+          <span class="en">👶 "I'm happy!"</span> <span class="zh">我很开心！</span>
+        </div>
+        <div class="song-box">
+          <strong>🎵 《Twinkle Twinkle Little Star》</strong><br>
+          Twinkle, twinkle, little star ⭐<br>
+          How I wonder what you are ✨<br>
+          Up above the world so high 🌍<br>
+          Like a diamond in the sky 💎<br>
+          <span style="color:var(--cn-down);font-size:11.5px;">💡 边唱边用手指做闪星动作，宝宝更投入</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>今日学习安排 & TPR指令</div>
+        <table class="schedule-table">
+          <tr><td>☀️ 晨间 10min</td><td>播放《Baby Shark》+ 早安问候 "Good morning!"</td></tr>
+          <tr><td>🌤️ 上午 20min</td><td>5个单词闪卡 + TPR指令 "Clap your hands!"</td></tr>
+          <tr><td>🌞 午后 15min</td><td>绘本共读《Brown Bear, Brown Bear》</td></tr>
+          <tr><td>🌙 晚间 15min</td><td>角色扮演超市购物 + 晚安 "Sweet dreams!"</td></tr>
+        </table>
+        <div class="phrase-box" style="margin-top:12px;">
+          <span class="en">"Touch your nose!"</span> <span class="zh">摸摸鼻子</span><br>
+          <span class="en">"Clap your hands!"</span> <span class="zh">拍拍手</span><br>
+          <span class="en">"Jump! Jump! Jump!"</span> <span class="zh">跳跳跳</span><br>
+          <span class="en">"Give me a hug!"</span> <span class="zh">抱一抱</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 每日英语（成人） ===== -->
+    <section class="panel" id="panel-adult">
+      <div class="phrase-of-day">
+        <div class="main">"Better late than never."</div>
+        <div class="trans">迟做总比不做好 ｜ 今日金句</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>今日打卡</div>
+        <div class="check-progress" id="adultProgress"></div>
+        <div class="check-item" data-id="adult_coffee"><input type="checkbox"><span class="ci-label">☕ 咖啡厅点单对话</span></div>
+        <div class="check-item" data-id="adult_call"><input type="checkbox"><span class="ci-label">📞 电话会议用语</span></div>
+        <div class="check-item" data-id="adult_travel"><input type="checkbox"><span class="ci-label">🧳 旅行问路口语</span></div>
+        <div class="check-item" data-id="adult_quote"><input type="checkbox"><span class="ci-label">💡 金句 & 词汇已记</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>场景一：咖啡店点单</div>
+        <div class="scene-card">
+          <div class="scene-title">☕ At the Coffee Shop</div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"> "I'd like a medium latte, please."</span><span class="zh-text">我要一杯中杯拿铁。</span></div>
+          <div class="dialogue-line"><span class="speaker">Barista:</span><span class="en-text"> "Hot or iced? Any syrup?"</span><span class="zh-text">热的还是冰的？要加糖浆吗？</span></div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"> "Hot, no syrup. And a blueberry muffin?"</span><span class="zh-text">热的，不加糖浆。再来个蓝莓麦芬？</span></div>
+          <div class="dialogue-line"><span class="speaker">Barista:</span><span class="en-text"> "That'll be $7.85. Here or to go?"</span><span class="zh-text">共7.85美元，在这喝还是带走？</span></div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"> "To go, please. Thank you!"</span><span class="zh-text">带走，谢谢！</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>场景二：电话会议</div>
+        <div class="scene-card">
+          <div class="scene-title">📞 Work Conference Call</div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"> "Sorry, I was on mute. Could you repeat that?"</span><span class="zh-text">抱歉我刚静音了，能重复一下吗？</span></div>
+          <div class="dialogue-line"><span class="speaker">Colleague:</span><span class="en-text"> "The deadline has been moved to Friday."</span><span class="zh-text">截止日期改到周五了。</span></div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"> "I'll circle back with the team and update you by EOD."</span><span class="zh-text">我跟进团队后今天下班前回复你。</span></div>
+          <div class="dialogue-line"><span class="speaker">Colleague:</span><span class="en-text"> "Let's touch base tomorrow morning."</span><span class="zh-text">明早我们再碰一下。</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>场景三：旅行问路</div>
+        <div class="scene-card">
+          <div class="scene-title">🧳 Asking for Directions</div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"> "Excuse me, how do I get to the subway station?"</span><span class="zh-text">请问地铁站怎么走？</span></div>
+          <div class="dialogue-line"><span class="speaker">Local:</span><span class="en-text"> "Go straight two blocks, then turn right at the light."</span><span class="zh-text">直走两个街区，红绿灯右转。</span></div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"> "Is it within walking distance?"</span><span class="zh-text">走路能到吗？</span></div>
+          <div class="dialogue-line"><span class="speaker">Local:</span><span class="en-text"> "Yeah, about 5 minutes. You can't miss it."</span><span class="zh-text">能，约5分钟，很明显。</span></div>
+        </div>
+        <div class="tip-bubble">💡 <strong>今日实用词汇：</strong><span style="color:#4338ca;font-weight:600;">circle back</span>=跟进 ｜<span style="color:#4338ca;font-weight:600;">touch base</span>=碰头 ｜<span style="color:#4338ca;font-weight:600;">EOD</span>=下班前 ｜<span style="color:#4338ca;font-weight:600;">on mute</span>=静音中 ｜<span style="color:#4338ca;font-weight:600;">to go</span>=带走</div>
+      </div>
+    </section>
+
+    <!-- ===== 爆款文案 ===== -->
+    <section class="panel" id="panel-xhs">
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>发箍发饰（今日爆款）</div>
+        <div class="xhs-grid">
+          <div class="xhs-post">
+            <div class="hook">🔥 迪士尼在逃公主必备！戴上这个发箍，路人追着我要链接！</div>
+            <div class="body-text">上海迪士尼达菲&雪莉玫毛绒发箍，一戴秒变童话女主角👸！高密度毛绒软fufu，亲肤内层戴整天不压耳，仅78g轻到无感，可调节弹力妈妈宝宝都能戴。去迪士尼一天被5个路人问链接，出片率💯！</div>
+            <div class="xhs-tags"><span class="xhs-tag">#迪士尼发箍</span><span class="xhs-tag">#达菲雪莉玫</span><span class="xhs-tag">#在逃公主</span></div>
+          </div>
+          <div class="xhs-post">
+            <div class="hook">⚡ 弹弓狗三眼仔发箍！刘亦菲看了都想戴的神仙头饰！</div>
+            <div class="body-text">弹簧伸缩设计大头星人狂喜🐶！玩具总动员IP多角色可选，找靠谱代购只要60-90元，性价比炸裂。戴上它你就是人群中最耀眼的那颗星✨，不买真的会后悔！</div>
+            <div class="xhs-tags"><span class="xhs-tag">#弹弓狗</span><span class="xhs-tag">#三眼仔</span><span class="xhs-tag">#玩具总动员</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>毛绒公仔 & 七宝首饰</div>
+        <div class="xhs-grid">
+          <div class="xhs-post">
+            <div class="hook">🎀 夏日限定玲娜贝儿开箱！新裙子太好看了叭！</div>
+            <div class="body-text">粉蓝配色小裙子少女心炸裂🌸，毛质升级rua到停不下来，25cm随身携带不占地。送闺蜜当生日礼她直接尖叫，放在办公桌每天心情都变好💖</div>
+            <div class="xhs-tags"><span class="xhs-tag">#玲娜贝儿</span><span class="xhs-tag">#迪士尼公仔</span><span class="xhs-tag">#生日礼物</span></div>
+          </div>
+          <div class="xhs-post">
+            <div class="hook">💎 迪士尼七宝手链美貌暴击！阳光下闪闪发光！</div>
+            <div class="body-text">雪莉玫珍珠贝壳手链实物颜值爆炸😭！金色链条+珍珠超显白，和发箍搭出CP感，亲测戴一周不掉色（洗澡记得摘）。299小贵但值回票价，已安利所有闺蜜🤩</div>
+            <div class="xhs-tags"><span class="xhs-tag">#迪士尼手链</span><span class="xhs-tag">#雪莉玫</span><span class="xhs-tag">#迪士尼配饰</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>写作技巧 & 高转化话术</div>
+        <div class="xhs-tip">📝 爆款公式 = 情感共鸣 + 场景植入 + 颜值暴击 + 紧迫感 + 话题标签</div>
+        <div class="template-card"><strong>模板一「在逃公主」：</strong>迪士尼在逃[身份] + 产品变身效果 + 回头率数据 + 购买理由</div>
+        <div class="template-card"><strong>模板二「闺蜜种草」：</strong>闺蜜收到XXX的反应 + 细节暴击 + 价格惊喜 + 关系共鸣</div>
+        <div class="template-card"><strong>模板三「开箱测评」：</strong>第一眼惊艳 + 材质/尺寸/颜色 + 佩戴体验 + vs其他款</div>
+        <div class="template-card"><strong>模板四「限量焦虑」：</strong>限定/联名亮点 + 断货预警 + 代购攻略 + 不买后悔</div>
+        <div class="template-card"><strong>🔥 高转化话术：</strong>美哭/萌晕/感动到哭 ｜ 路人追着要链接 ｜ 不买会后悔系列 ｜ 已安利所有闺蜜 ｜ 迪士尼女孩/在逃公主 ｜ 200+却值回票价 ｜ 全网都在找 ｜ 亲测戴了一周</div>
+        <div class="xhs-tags" style="margin-top:10px;">
+          <span class="xhs-tag">#迪士尼周边</span><span class="xhs-tag">#迪士尼穿搭</span><span class="xhs-tag">#迪士尼必买</span><span class="xhs-tag">#迪士尼十周年</span><span class="xhs-tag">#少女心爆棚</span><span class="xhs-tag">#闺蜜礼物</span><span class="xhs-tag">#好物分享</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">本工作台仅供个人参考，不构成任何投资建议 ｜ JOYA Workstation v3.0</div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV (mobile) ===== -->
+<nav class="bottom-nav">
+  <button class="bottom-tab active" data-panel="ashare" onclick="selectPanel(this)"><span class="ico">📈</span>股票</button>
+  <button class="bottom-tab" data-panel="kids" onclick="selectPanel(this)"><span class="ico">🎈</span>幼儿英语</button>
+  <button class="bottom-tab" data-panel="adult" onclick="selectPanel(this)"><span class="ico">💬</span>每日英语</button>
+  <button class="bottom-tab" data-panel="xhs" onclick="selectPanel(this)"><span class="ico">🏰</span>爆款</button>
+</nav>
+
+<script>
+// ===== CLOCK =====
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('zh-CN',{hour12:false});
+  document.getElementById('dateStr').textContent=now.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+}
+updateClock(); setInterval(updateClock,1000);
+
+// ===== NAV =====
+const pageMeta={
+  ashare:{t:'A股盘中行情',s:'实时盘中数据 · 2026年7月29日'},
+  overnight:{t:'隔夜晚间新闻',s:'隔夜全球要闻 · 2026年7月28日（美东）'},
+  usnight:{t:'美股夜盘情况',s:'美股收盘 · 2026年7月28日（绿涨红跌）'},
+  macro:{t:'全球宏观经济',s:'宏观经济新闻 & 分析师研判'},
+  kids:{t:'幼儿英语',s:'4岁宝宝 · 启蒙打卡'},
+  adult:{t:'每日英语',s:'30+成人 · 实用场景'},
+  xhs:{t:'爆款文案',s:'迪士尼 · 小红书卖货'}
+};
+const STOCK=['ashare','overnight','usnight','macro'];
+
+function selectPanel(el){
+  const p=el.dataset.panel;
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  document.getElementById('panel-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item,.sub-item,.bottom-tab,.mobile-subtabs button').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  // sync sidebar / bottom / sub
+  if(STOCK.includes(p)){
+    document.getElementById('nav-stock').classList.add('active');
+    document.getElementById('sub-stock').classList.remove('hidden');
+    document.getElementById('nav-stock').classList.remove('collapsed');
+    document.getElementById('mobileSubtabs').classList.add('visible');
+    // mark matching sidebar sub + mobile sub + bottom(股票)
+    document.querySelectorAll('.sub-item[data-panel="'+p+'"]').forEach(x=>x.classList.add('active'));
+    document.querySelectorAll('.mobile-subtabs button[data-panel="'+p+'"]').forEach(x=>x.classList.add('active'));
+    document.querySelector('.bottom-nav .bottom-tab[data-panel="ashare"]').classList.add('active');
+  }else{
+    document.getElementById('mobileSubtabs').classList.remove('visible');
+    document.querySelectorAll('.nav-item[data-panel="'+p+'"]').forEach(x=>x.classList.add('active'));
+    document.querySelectorAll('.bottom-tab[data-panel="'+p+'"]').forEach(x=>x.classList.add('active'));
+  }
+  document.getElementById('pageTitle').textContent=pageMeta[p].t;
+  document.getElementById('pageSub').textContent=pageMeta[p].s;
+  document.querySelector('.content').scrollTop=0;
+}
+function toggleParent(id){
+  const parent=document.getElementById('nav-'+id);
+  const sub=document.getElementById('sub-'+id);
+  parent.classList.toggle('collapsed');
+  sub.classList.toggle('hidden');
+}
+
+// ===== DAILY CHECKLIST (localStorage by date) =====
+function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function setupChecklist(){
+  const key=todayKey();
+  document.querySelectorAll('.check-item').forEach(el=>{
+    const id=el.dataset.id;
+    const saved=localStorage.getItem('joya_'+key+'_'+id);
+    const cb=el.querySelector('input');
+    if(saved==='1'){ el.classList.add('done'); cb.checked=true; }
+    cb.addEventListener('change',e=>{
+      localStorage.setItem('joya_'+key+'_'+id, e.target.checked?'1':'0');
+      el.classList.toggle('done', e.target.checked);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress(){
+  ['kids','adult'].forEach(cat=>{
+    const items=document.querySelectorAll('#panel-'+cat+' .check-item');
+    if(!items.length) return;
+    const done=document.querySelectorAll('#panel-'+cat+' .check-item.done').length;
+    const bar=document.getElementById(cat+'Progress');
+    if(bar) bar.innerHTML='今日完成 <b>'+done+' / '+items.length+'</b>' + (done===items.length ? ' 🎉 全部完成！' : '');
+  });
+}
+setupChecklist();
+
+// ===== REGISTER SERVICE WORKER (PWA) =====
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+<script>
+// ===== LIVE STOCK QUOTES (Tencent finance, JSONP via script injection) =====
+(function(){
+  const MAP = [
+    {code:'sh000001', market:'ashare'},
+    {code:'sz399001', market:'ashare'},
+    {code:'sz399006', market:'ashare'},
+    {code:'usDJI',    market:'us'},
+    {code:'usINX',    market:'us'},
+    {code:'usIXIC',   market:'us'}
+  ];
+  function fmt(n){
+    return Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function classFor(market, up){
+    if(market==='ashare') return up ? 'ashare-up' : 'ashare-down';
+    return up ? 'up' : 'down';
+  }
+  function updateBox(box, f){
+    const price = parseFloat(f[3]);
+    const prev  = parseFloat(f[4]);
+    if(isNaN(price) || isNaN(prev)) return;
+    const chg = price - prev;
+    const pct = prev ? (chg/prev*100) : 0;
+    const up = chg >= 0;
+    box.classList.remove('ashare-up','ashare-down','up','down');
+    box.classList.add(classFor(box.dataset.market, up));
+    box.querySelector('.index-price').textContent = fmt(price);
+    const arrow = up ? '▲' : '▼';
+    const sign = up ? '+' : '';
+    box.querySelector('.index-change').textContent = arrow + ' ' + sign + fmt(chg) + ' (' + sign + pct.toFixed(2) + '%)';
+  }
+  function updateTime(){
+    const raw = window['v_sh000001'];
+    if(!raw) return;
+    const ts = raw.split('~')[30];
+    if(ts && ts.length >= 12){
+      const dt = ts.slice(0,4) + '-' + ts.slice(4,6) + '-' + ts.slice(6,8) + ' ' + ts.slice(8,10) + ':' + ts.slice(10,12);
+      const el = document.getElementById('ashare-time');
+      if(el) el.textContent = dt;
+    }
+  }
+  function fetchQuotes(){
+    const codes = MAP.map(m=>m.code).join(',');
+    const s = document.createElement('script');
+    s.src = 'https://qt.gtimg.cn/q=' + codes + '&_=' + Date.now();
+    s.onload = function(){
+      MAP.forEach(m=>{
+        const raw = window['v_' + m.code];
+        if(raw){
+          const box = document.querySelector('.index-box[data-code="' + m.code + '"]');
+          if(box) updateBox(box, raw.split('~'));
+        }
+      });
+      updateTime();
+      if(s.parentNode) s.parentNode.removeChild(s);
+    };
+    s.onerror = function(){ if(s.parentNode) s.parentNode.removeChild(s); };
+    document.body.appendChild(s);
+  }
+  function startLive(){
+    fetchQuotes();
+    setInterval(fetchQuotes, 60000); // refresh every 60s
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startLive);
+  else startLive();
+})();
+</script>
+</body>
+</html>
