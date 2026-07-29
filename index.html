@@ -136,6 +136,7 @@
   .phrase-box .zh{ color:#9a3412; font-size:12px; }
   .song-box{ padding:12px 14px; border-radius:9px; background:#f0fdf4; border:1px solid #dcfce7; font-size:12.5px; line-height:1.8; }
   .song-line{ display:flex; align-items:baseline; }
+  .song-zh{ font-size:11px; color:#65a30d; margin:1px 0 6px 18px; }
   .schedule-table{ width:100%; font-size:13px; border-collapse:collapse; }
   .schedule-table td{ padding:9px 10px; border-bottom:1px solid var(--border); }
   .schedule-table td:first-child{ font-weight:600; white-space:nowrap; color:var(--accent); width:120px; }
@@ -241,7 +242,7 @@
       <span class="ico">🏰</span><span class="lbl">爆款文案</span>
     </div>
   </nav>
-  <div class="sidebar-footer">数据每日自动更新<br>仅供参考 · JOYA v4.0</div>
+  <div class="sidebar-footer">数据每日自动更新<br>仅供参考 · JOYA v4.1</div>
 </aside>
 <div class="nav-overlay" id="navOverlay" onclick="closeDrawer()"></div>
 
@@ -474,12 +475,16 @@
           <span class="zh">我很开心！</span>
         </div>
         <div class="song-box">
-          <strong>🎵 《Twinkle Twinkle Little Star》</strong> <button class="spk-btn" onclick="speak('Twinkle, twinkle, little star. How I wonder what you are.')" aria-label="朗读整首">🔊</button><br>
+          <strong>🎵 《Twinkle Twinkle Little Star》小星星</strong> <button class="spk-btn" onclick="speak('Twinkle, twinkle, little star. How I wonder what you are.', 'en-US', true)" aria-label="朗读整首">🔊</button><br>
           <div class="song-line"><span data-spk="Twinkle, twinkle, little star">Twinkle, twinkle, little star ⭐</span></div>
+          <div class="song-zh">一闪一闪小星星</div>
           <div class="song-line"><span data-spk="How I wonder what you are">How I wonder what you are ✨</span></div>
+          <div class="song-zh">我想知道你是谁</div>
           <div class="song-line"><span data-spk="Up above the world so high">Up above the world so high 🌍</span></div>
+          <div class="song-zh">高高挂在世界之上</div>
           <div class="song-line"><span data-spk="Like a diamond in the sky">Like a diamond in the sky 💎</span></div>
-          <span style="color:var(--cn-down);font-size:11.5px;">💡 边唱边用手指做闪星动作，宝宝更投入</span>
+          <div class="song-zh">像天上的钻石一样</div>
+          <span style="color:var(--cn-down);font-size:11.5px;">💡 边唱边用手指做闪星动作，宝宝更投入 | 先英文唱一遍，再中文解释一遍</span>
         </div>
       </div>
       <div class="card">
@@ -491,6 +496,34 @@
         <p style="font-size:11.5px;color:var(--text-secondary);margin-top:8px;">📺 今日儿歌：<strong>Super Simple Songs — Twinkle Twinkle Little Star</strong>（B站可播，无需VPN）。<br>每日自动更换一首，配合上面歌词🔊跟唱效果最佳。</p>
         <!--/DAILY:SSS-->
       </div>
+      <!--DAILY:BOOK-->
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>📖 今日绘本共读 · 中英对照 <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">（每日自动更换）</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;">
+          <div style="flex:1;min-width:200px;">
+            <div style="font-weight:700;font-size:14px;color:var(--accent);margin-bottom:8px;">🐻 《Brown Bear, Brown Bear, What Do You See?》</div>
+            <div style="font-size:13px;line-height:2.0;color:#6b21a8;">
+              <div class="en-line"><span data-spk="Brown Bear, Brown Bear, what do you see?">"Brown Bear, Brown Bear, what do you see?"</span></div>
+              <div style="font-size:11.5px;color:#9d174d;margin-bottom:8px;">棕熊棕熊，你看到了什么？</div>
+              <div class="en-line"><span data-spk="I see a red bird looking at me.">"I see a red bird looking at me."</span></div>
+              <div style="font-size:11.5px;color:#9d174d;margin-bottom:8px;">我看到一只红色的鸟在看我。</div>
+              <div class="en-line"><span data-spk="Red Bird, Red Bird, what do you see?">"Red Bird, Red Bird, what do you see?"</span></div>
+              <div style="font-size:11.5px;color:#9d174d;margin-bottom:8px;">红鸟红鸟，你看到了什么？</div>
+              <div class="en-line"><span data-spk="I see a yellow duck looking at me.">"I see a yellow duck looking at me."</span></div>
+              <div style="font-size:11.5px;color:#9d174d;">我看到一只黄色的鸭子在看我。</div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:180px;background:#fefce8;border-radius:10px;padding:14px;border:1px solid #fef08a;font-size:12px;line-height:1.8;color:#854d0e;">
+            <strong>💡 亲子共读技巧：</strong><br>
+            ① 指着图片问"What color is it?"<br>
+            ② 让宝宝接龙"I see a ___"<br>
+            ③ 每天换动物/颜色组合<br>
+            ④ 角色扮演：轮流当提问方<br>
+            ⑤ 配合动物叫声更投入🐻🔊
+          </div>
+        </div>
+      </div>
+      <!--/DAILY:BOOK-->
       <div class="card">
         <div class="card-title"><span class="bar"></span>今日学习安排 & TPR指令</div>
         <table class="schedule-table">
@@ -511,16 +544,30 @@
     <!-- ===== 每日英语（成人） ===== -->
     <section class="panel" id="panel-adult">
       <div class="phrase-of-day">
-        <div class="main"><span data-spk="Better late than never.">“Better late than never.”</span></div>
+        <div class="main"><span data-spk="Better late than never.">"Better late than never."</span></div>
         <div class="trans">迟做总比不做好 ｜ 今日金句</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>⏱️ 今日30分钟学习计划</div>
+        <table class="schedule-table">
+          <tr><td style="color:var(--purple);">0-5min</td><td>🎧 <strong>热身磨耳朵</strong>：播放昨日美剧台词音频，不看书只听，训练听力语感</td></tr>
+          <tr><td style="color:var(--blue);">5-10min</td><td>📖 <strong>美剧精听跟读</strong>：看台词逐句跟读，模仿语音语调（至少3遍）</td></tr>
+          <tr><td style="color:var(--accent);">10-18min</td><td>🗣️ <strong>日常对话实战</strong>：自问自答练习今日场景对话，切换角色反复练</td></tr>
+          <tr><td style="color:var(--orange);">18-22min</td><td>📝 <strong>表达积累</strong>：摘抄3个今日新表达 + 用每个造句（一定要动笔/打字）</td></tr>
+          <tr><td style="color:var(--green-up);">22-28min</td><td>🎭 <strong>影子跟读法</strong>：播放美剧片段，延迟0.5秒跟读，练连读和节奏</td></tr>
+          <tr><td style="color:#0891b2;">28-30min</td><td>🔁 <strong>快速复盘</strong>：闭眼复述今天学的3句台词+一个场景对话</td></tr>
+        </table>
+        <div class="callout info" style="margin-top:10px;">💡 <strong>关键原则：</strong>每天坚持30分钟 > 周末突击3小时。建议早晨或午休时间段固定，形成肌肉记忆。</div>
       </div>
       <div class="card">
         <div class="card-title"><span class="bar"></span>今日打卡</div>
         <div class="check-progress" id="adultProgress"></div>
-        <div class="check-item" data-id="adult_coffee"><input type="checkbox"><span class="ci-label">📺 美剧台词跟读</span></div>
-        <div class="check-item" data-id="adult_call"><input type="checkbox"><span class="ci-label">💡 今日实用表达已记</span></div>
-        <div class="check-item" data-id="adult_travel"><input type="checkbox"><span class="ci-label">🗣️ 自言自语练一遍</span></div>
-        <div class="check-item" data-id="adult_quote"><input type="checkbox"><span class="ci-label">📝 金句已收藏</span></div>
+        <div class="check-item" data-id="adult_warmup"><input type="checkbox"><span class="ci-label">🎧 热身磨耳朵（5min）</span></div>
+        <div class="check-item" data-id="adult_shadow"><input type="checkbox"><span class="ci-label">📖 美剧精听跟读（5min）</span></div>
+        <div class="check-item" data-id="adult_dialogue"><input type="checkbox"><span class="ci-label">🗣️ 日常对话实战（8min）</span></div>
+        <div class="check-item" data-id="adult_write"><input type="checkbox"><span class="ci-label">📝 表达积累+造句（4min）</span></div>
+        <div class="check-item" data-id="adult_shadow2"><input type="checkbox"><span class="ci-label">🎭 影子跟读法（6min）</span></div>
+        <div class="check-item" data-id="adult_review"><input type="checkbox"><span class="ci-label">🔁 快速复盘（2min）</span></div>
       </div>
       <div class="card">
         <div class="card-title"><span class="bar"></span>今日美剧台词 · 点🔊跟读 <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">（每日自动更换）</span></div>
@@ -542,10 +589,110 @@
         <div class="tip-bubble">💡 <strong>今日实用表达：</strong><span style="color:#4338ca;font-weight:600;">on a break</span>=暂停/闹掰 ｜<span style="color:#4338ca;font-weight:600;">How you doin'?</span>=最近咋样 ｜<span style="color:#4338ca;font-weight:600;">Bazinga</span>=骗你的 ｜<span style="color:#4338ca;font-weight:600;">make lemons</span>=反将一军。把一句设成手机铃声，全天磨耳朵。</div>
         <!--/DAILY:TV-->
       </div>
+      <!--DAILY:DIALOGUE-->
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>🗣️ 每日场景对话 · 日常用语实战 <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">（每日自动更换）</span></div>
+        <div class="scene-card">
+          <div class="scene-title">☕ 场景一：咖啡厅点单（At a Coffee Shop）</div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"><span data-spk="Hi, I'd like a medium latte, please.">"Hi, I'd like a medium latte, please."</span></span><span class="zh-text">你好，我要一杯中杯拿铁。</span></div>
+          <div class="dialogue-line"><span class="speaker">Barista:</span><span class="en-text"><span data-spk="Sure. Hot or iced?">"Sure. Hot or iced?"</span></span><span class="zh-text">好的，热的还是冰的？</span></div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"><span data-spk="Hot, please. And can I have a blueberry muffin as well?">"Hot, please. And can I have a blueberry muffin as well?"</span></span><span class="zh-text">热的，谢谢。再要一个蓝莓麦芬可以吗？</span></div>
+          <div class="dialogue-line"><span class="speaker">Barista:</span><span class="en-text"><span data-spk="Of course. That'll be $8.50. Cash or card?">"Of course. That'll be $8.50. Cash or card?"</span></span><span class="zh-text">当然。一共8.5美元，现金还是刷卡？</span></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-title">🧭 场景二：问路指路（Asking for Directions）</div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"><span data-spk="Excuse me, could you tell me how to get to the subway station?">"Excuse me, could you tell me how to get to the subway station?"</span></span><span class="zh-text">打扰一下，请问地铁站怎么走？</span></div>
+          <div class="dialogue-line"><span class="speaker">Stranger:</span><span class="en-text"><span data-spk="Sure. Go straight for two blocks, then turn left at the traffic light.">"Sure. Go straight for two blocks, then turn left at the traffic light."</span></span><span class="zh-text">当然。直走两个路口，然后在红绿灯左转。</span></div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"><span data-spk="Is it within walking distance?">"Is it within walking distance?"</span></span><span class="zh-text">走路能到吗？</span></div>
+          <div class="dialogue-line"><span class="speaker">Stranger:</span><span class="en-text"><span data-spk="Yeah, it's about a 10-minute walk. You can't miss it.">"Yeah, it's about a 10-minute walk. You can't miss it."</span></span><span class="zh-text">能，大概走10分钟，不会错过的。</span></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-title">📞 场景三：电话沟通（On the Phone）</div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"><span data-spk="Hello, this is [Name] calling. I'd like to make a reservation for dinner tonight.">"Hello, this is [Name] calling. I'd like to make a reservation for dinner tonight."</span></span><span class="zh-text">你好，我是[名字]，想预订今晚的晚餐。</span></div>
+          <div class="dialogue-line"><span class="speaker">Host:</span><span class="en-text"><span data-spk="Certainly. For how many people and what time?">"Certainly. For how many people and what time?"</span></span><span class="zh-text">好的，几位？几点？</span></div>
+          <div class="dialogue-line"><span class="speaker">You:</span><span class="en-text"><span data-spk="A table for two at 7 PM, please.">"A table for two at 7 PM, please."</span></span><span class="zh-text">两人，晚上7点。</span></div>
+          <div class="dialogue-line"><span class="speaker">Host:</span><span class="en-text"><span data-spk="Perfect. We have you down. See you at 7!">"Perfect. We have you down. See you at 7!"</span></span><span class="zh-text">好的，已预订。7点见！</span></div>
+        </div>
+        <div class="tip-bubble">💡 <strong>练习口诀：</strong>读3遍+遮住中文说英文+角色互换自问自答。每个场景练到能脱口而出才算过关！</div>
+      </div>
+      <!--/DAILY:DIALOGUE-->
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>📅 3个月日常对话通关路线图（3-Month Roadmap）</div>
+        <div style="font-size:13px;line-height:1.9;">
+          <div class="callout info" style="margin-bottom:10px;">
+            <strong>🎯 总目标：</strong>3个月后能在海外旅行/日常交流中独立完成基本对话——点餐、问路、购物、打车、酒店入住、简单社交。
+          </div>
+          <table class="mini-table">
+            <tr><th style="width:20%;">阶段</th><th style="width:25%;">时间</th><th style="width:55%;">能力目标 & 重点场景</th></tr>
+            <tr>
+              <td style="font-weight:700;color:var(--orange);">🌱 Month 1<br>生存口语</td>
+              <td>第1-4周</td>
+              <td><strong>目标：</strong>敢开口，能用短句完成基本需求表达<br>
+              <strong>场景：</strong>问候介绍 → 点餐购物 → 问路交通 → 酒店入住<br>
+              <strong>积累：</strong>300+高频词汇 + 50个万能句型<br>
+              <strong>检验：</strong>能在餐厅独立用英文点完整一顿饭</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;color:var(--blue);">🌿 Month 2<br>社交口语</td>
+              <td>第5-8周</td>
+              <td><strong>目标：</strong>能进行5分钟以上的简单社交对话<br>
+              <strong>场景：</strong>电话预约 → 看病就医 → 闲聊交友 → 表达观点<br>
+              <strong>积累：</strong>600+词汇 + 100个常用表达<br>
+              <strong>检验：</strong>能和外国朋友聊15分钟（兴趣爱好/旅行/工作）</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;color:var(--purple);">🌳 Month 3<br>流利过渡</td>
+              <td>第9-12周</td>
+              <td><strong>目标：</strong>能应对大部分日常场景，表达更自然<br>
+              <strong>场景：</strong>商务邮件 → 会议发言 → 投诉协商 → 深度交流<br>
+              <strong>积累：</strong>1000+词汇 + 理解连读/吞音等口语现象<br>
+              <strong>检验：</strong>出国旅游全程不用翻译App即可正常交流</td>
+            </tr>
+          </table>
+        </div>
+        <div class="tip-bubble" style="margin-top:10px;">🎯 <strong>每日配方（雷打不动）：</strong>美剧台词跟读（15min）+ 场景对话演练（10min）+ 新表达造句（5min）= 30min/天 × 90天 = 日常对话通关！</div>
+      </div>
     </section>
 
     <!-- ===== 爆款文案 ===== -->
     <section class="panel" id="panel-xhs">
+      <!--DAILY:XHS-->
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>🔥 今日小红书热门标题精选 · 迪士尼赛道 <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">（每日自动更新）</span></div>
+        <div class="xhs-tip" style="margin-bottom:14px;">📊 以下为当日小红书迪士尼赛道<strong>互动量最高</strong>的5个标题及文案拆解，含爆款公式分析，可直接替换产品套用。</div>
+        <div class="template-card">
+          <strong>🏆 TOP1「迪士尼反向带娃指南」</strong><br>
+          <span style="color:var(--accent);">原文标题：</span>"排队2小时换娃崩溃？我用这套反向操作，没渡劫还找到了松弛感"<br>
+          <span style="color:var(--blue);">爆款公式：</span>痛点共鸣（排队崩溃）+ 反常识解法（反向操作）+ 情绪结果（松弛感）<br>
+          <span style="color:var(--purple);">可套用：</span>"[痛点]+我用[反常识方法]，没[负面结果]还[正面结果]"
+        </div>
+        <div class="template-card">
+          <strong>🥈 TOP2「在逃公主皇冠戒指」</strong><br>
+          <span style="color:var(--accent);">原文标题：</span>"5岁到25岁都能戴的皇冠锆石婚戒，小红书女孩人手一枚"<br>
+          <span style="color:var(--blue);">爆款公式：</span>年龄跨度惊喜（5→25）+ 身份标签（小红书女孩）+ 从众心理（人手一枚）<br>
+          <span style="color:var(--purple);">可套用：</span>"[低龄]到[高龄]都能用的[产品]，[人群标签]都在抢"
+        </div>
+        <div class="template-card">
+          <strong>🥉 TOP3「迪士尼草莓熊盲盒挂件」</strong><br>
+          <span style="color:var(--accent);">原文标题：</span>"软到像捏猫垫！迪士尼草莓熊盲盒挂件，治愈系本体系列"<br>
+          <span style="color:var(--blue);">爆款公式：</span>触感描述（像捏猫垫）+ IP加持 + 情感标签（治愈系本体）<br>
+          <span style="color:var(--purple);">可套用：</span>"[触感比喻]！[IP产品]，[情感标签]本体系列"
+        </div>
+        <div class="template-card">
+          <strong>④ TOP4「迪士尼音乐节徽章盲盒」</strong><br>
+          <span style="color:var(--accent);">原文标题：</span>"摸了三小时不想走！迪士尼音乐节徽章盲盒，氛围感直接拉满"<br>
+          <span style="color:var(--blue);">爆款公式：</span>沉浸时间（摸了三小时）+ 场景带入 + 氛围感关键词<br>
+          <span style="color:var(--purple);">可套用：</span>"[沉浸行为]+不想走！[产品]，[氛围词]直接拉满"
+        </div>
+        <div class="template-card">
+          <strong>⑤ TOP5「迪士尼1.5万苦旅话题」</strong><br>
+          <span style="color:var(--accent);">原文标题：</span>"一天花光1万5！迪士尼苦旅刺痛多少中国家长"<br>
+          <span style="color:var(--blue);">爆款公式：</span>数字冲击（1万5）+ 情绪词（刺痛）+ 人群共鸣（中国家长）<br>
+          <span style="color:var(--purple);">可套用：</span>"[金额/数量]！[事件]刺痛多少[人群]"（争议话题引流）<br>
+          <span style="font-size:11px;color:var(--text-secondary);">⚠️ 争议类标题流量大但风险高，适合引流而非带货，谨慎使用。</span>
+        </div>
+      </div>
+      <!--/DAILY:XHS-->
       <div class="card">
         <div class="card-title"><span class="bar"></span>发箍发饰（今日爆款）</div>
         <div class="xhs-grid">
@@ -590,7 +737,7 @@
       </div>
     </section>
 
-    <div class="footer-note">本工作台仅供个人参考，不构成任何投资建议 ｜ JOYA Workstation v4.0</div>
+    <div class="footer-note">本工作台仅供个人参考，不构成任何投资建议 ｜ JOYA Workstation v4.1</div>
   </div>
 </div>
 
@@ -605,15 +752,41 @@ function updateClock(){
 updateClock(); setInterval(updateClock,1000);
 
 // ===== SPEECH (Web Speech API) =====
-function speak(text, lang){
+function getBestVoice(lang, preferYoung){
+  if(!('speechSynthesis' in window)) return null;
+  const voices=window.speechSynthesis.getVoices();
+  if(!voices.length) return null;
+  // filter by language
+  const match=voices.filter(v=>v.lang.startsWith(lang));
+  if(!match.length) return null;
+  // prefer young/female voice if requested
+  if(preferYoung){
+    const young=match.find(v=>v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Fiona')||v.name.includes('Moira'));
+    if(young) return young;
+    const female=match.find(v=>v.name.toLowerCase().includes('female')||v.name.includes('Zira'));
+    if(female) return female;
+  }
+  return match[0];
+}
+function speak(text, lang, isKids){
   if(!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读，建议用 Safari/Chrome'); return; }
   try{
     window.speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text);
-    u.lang=lang||'en-US'; u.rate=0.92; u.pitch=1.0;
+    u.lang=lang||'en-US';
+    // Kids-friendly: slower + higher pitch for a cute voice
+    if(isKids){ u.rate=0.72; u.pitch=1.4; }
+    else { u.rate=0.92; u.pitch=1.0; }
+    const voice=getBestVoice(u.lang, isKids);
+    if(voice) u.voice=voice;
     u.onstart=()=>{ document.querySelectorAll('.spk-btn.playing').forEach(b=>b.classList.remove('playing')); };
     window.speechSynthesis.speak(u);
   }catch(e){}
+}
+// ensure voices are loaded (Safari loads asynchronously)
+if('speechSynthesis' in window){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged=()=>{ window.speechSynthesis.getVoices(); };
 }
 // auto-attach 🔊 buttons to every [data-spk] element
 function attachSpeakers(){
@@ -622,7 +795,8 @@ function attachSpeakers(){
     const btn=document.createElement('button');
     btn.type='button'; btn.className='spk-btn'; btn.setAttribute('aria-label','朗读');
     btn.textContent='🔊';
-    btn.addEventListener('click',function(e){ e.stopPropagation(); speak(el.getAttribute('data-spk')); this.classList.add('playing'); });
+    const isKids=el.closest('#panel-kids')!==null;
+    btn.addEventListener('click',function(e){ e.stopPropagation(); speak(el.getAttribute('data-spk'), 'en-US', isKids); this.classList.add('playing'); });
     el.parentNode.insertBefore(btn, el);
     el.dataset.spkReady='1';
   });
@@ -640,7 +814,7 @@ const pageMeta={
   macro:{t:'全球宏观经济',s:'宏观经济新闻 & 分析师研判'},
   evening:{t:'晚间国内要闻',s:'每日自动提炼 · 盘前速览'},
   kids:{t:'幼儿英语',s:'4岁宝宝 · 启蒙打卡'},
-  adult:{t:'每日英语',s:'30+成人 · 美剧跟读'},
+  adult:{t:'每日英语',s:'30+成人 · 30min美剧+日常对话 · 3月通关计划'},
   xhs:{t:'爆款文案',s:'迪士尼 · 小红书卖货'}
 };
 const STOCK=['ashare','overnight','usnight','macro','evening'];
