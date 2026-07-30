@@ -1,4 +1,4 @@
-const CACHE = 'joya-v4';
+const CACHE = 'joya-v5';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (e) => {
