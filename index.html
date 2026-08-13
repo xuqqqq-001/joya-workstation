@@ -180,16 +180,35 @@
   .check-progress b{ color:var(--accent); }
 
   /* ===== WORKOUT ===== */
-  .workout-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-bottom:14px; }
-  .workout-card{ padding:14px 10px; border-radius:10px; background:#fff; border:2px solid var(--border); text-align:center; cursor:pointer; transition:all .15s; user-select:none; position:relative; }
-  .workout-card:active{ transform:scale(.96); }
+  .workout-grid{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+  .workout-card{ padding:14px 16px; border-radius:12px; background:#fff; border:2px solid var(--border); cursor:pointer; transition:all .2s; user-select:none; position:relative; display:flex; align-items:center; gap:14px; }
+  .workout-card:active{ transform:scale(.99); }
   .workout-card.done{ background:#f0fdf4; border-color:#4ade80; }
-  .workout-card .wo-emoji{ font-size:28px; display:block; margin-bottom:5px; }
-  .workout-card .wo-name{ font-size:13px; font-weight:700; color:var(--text); }
-  .workout-card .wo-reps{ font-size:11px; color:var(--text-secondary); margin-top:3px; }
-  .workout-card .wo-check{ position:absolute; top:6px; right:8px; font-size:18px; opacity:0; transition:opacity .15s; }
+  .workout-card .wo-emoji{ font-size:32px; flex-shrink:0; }
+  .workout-card .wo-info{ flex:1; min-width:0; }
+  .workout-card .wo-name{ font-size:14px; font-weight:700; color:var(--text); }
+  .workout-card .wo-reps{ font-size:12px; color:var(--text-secondary); margin-top:2px; }
+  .workout-card .wo-muscles{ font-size:11px; color:var(--blue); margin-top:3px; }
+  .workout-card .wo-check{ font-size:22px; opacity:0; transition:opacity .2s; flex-shrink:0; }
   .workout-card.done .wo-check{ opacity:1; }
   .workout-card.done .wo-name{ color:var(--green-up); }
+  .workout-card .wo-arrow{ font-size:14px; color:var(--text-secondary); transition:transform .2s; flex-shrink:0; margin-left:4px; }
+  .workout-card.expanded .wo-arrow{ transform:rotate(180deg); }
+  .workout-detail{ max-height:0; overflow:hidden; transition:max-height .35s ease, padding .35s ease, opacity .25s ease; opacity:0; padding:0 14px; background:#fafafa; border-radius:0 0 12px 12px; border:2px solid var(--border); border-top:none; margin-top:-10px; margin-bottom:6px; }
+  .workout-detail.open{ max-height:900px; opacity:1; padding:14px; }
+  .workout-detail.done{ border-color:#4ade80; background:#f0fdf4; }
+  .wo-detail-body{ line-height:1.8; }
+  .wo-diagram{ display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; padding:10px; background:#fff; border-radius:8px; border:1px solid var(--border); }
+  .wo-pose{ font-size:28px; flex-shrink:0; line-height:1.2; }
+  .wo-pose-desc{ font-size:12px; color:var(--text-secondary); }
+  .wo-steps{ margin:10px 0; }
+  .wo-step{ font-size:12.5px; color:var(--text); padding:5px 0; border-bottom:1px dashed var(--border); }
+  .wo-step:last-child{ border-bottom:none; }
+  .wo-step b{ color:var(--accent); }
+  .wo-mistake{ font-size:12px; color:#9a3412; background:#fff7ed; padding:8px 10px; border-radius:6px; margin-top:8px; border-left:3px solid #fb923c; }
+  .wo-done-btn{ display:block; width:100%; margin-top:12px; padding:10px; border:none; border-radius:8px; background:var(--accent); color:#fff; font-size:14px; font-weight:700; cursor:pointer; transition:background .15s; }
+  .wo-done-btn:hover{ background:#7c3aed; }
+  .wo-done-btn.done{ background:#22c55e; }
   .workout-progress{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
   .workout-progress-bar{ flex:1; height:8px; border-radius:4px; background:var(--border); overflow:hidden; }
   .workout-progress-fill{ height:100%; background:linear-gradient(90deg,#4ade80,#22c55e); border-radius:4px; transition:width .3s ease; width:0; }
@@ -785,18 +804,157 @@
           <span class="stat">🏅 累计完成 <b id="woTotal">0</b> 次</span>
         </div>
         <div class="workout-grid" id="woGrid">
-          <div class="workout-card" data-id="wo1" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🏃</span><div class="wo-name">开合跳</div><div class="wo-reps">30 次</div></div>
-          <div class="workout-card" data-id="wo2" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🙇</span><div class="wo-name">俯卧撑</div><div class="wo-reps">12 次</div></div>
-          <div class="workout-card" data-id="wo3" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🦵</span><div class="wo-name">深蹲</div><div class="wo-reps">20 次</div></div>
-          <div class="workout-card" data-id="wo4" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🧍</span><div class="wo-name">平板支撑</div><div class="wo-reps">40 秒</div></div>
-          <div class="workout-card" data-id="wo5" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🤸</span><div class="wo-name">卷腹</div><div class="wo-reps">15 次</div></div>
-          <div class="workout-card" data-id="wo6" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🏋️</span><div class="wo-name">高抬腿</div><div class="wo-reps">40 次</div></div>
-          <div class="workout-card" data-id="wo7" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">💪</span><div class="wo-name">臂屈伸</div><div class="wo-reps">10 次</div></div>
-          <div class="workout-card" data-id="wo8" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🚶</span><div class="wo-name">弓步蹲</div><div class="wo-reps">每腿 10 次</div></div>
-          <div class="workout-card" data-id="wo9" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🍑</span><div class="wo-name">臀桥</div><div class="wo-reps">15 次</div></div>
-          <div class="workout-card" data-id="wo10" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">⚡</span><div class="wo-name">波比跳</div><div class="wo-reps">8 次</div></div>
+          <!-- 1. 靠墙俯卧撑 -->
+          <div class="workout-card" data-id="wo1" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🧱</span><div class="wo-info"><div class="wo-name">靠墙俯卧撑</div><div class="wo-reps">12 次 · 零基础上肢入门</div><div class="wo-muscles">💪 胸 / 肩 / 手臂</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo1">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🧍<br>↓<br>🙇<br>↓<br>🧍</div><div class="wo-pose-desc"><b>动作轨迹：</b>面对墙壁站立 → 双手推墙俯身 → 胸部靠近墙面 → 推回站立<br><span style="color:var(--blue);">💡 比标准俯卧撑简单 80%，但同样锻炼上肢</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>面对墙壁站立，双脚离墙约一臂距离（约60cm），双脚与肩同宽。双手手掌贴墙，位置与肩同高或略宽于肩。</div>
+                <div class="wo-step"><b>② 吸气下降：</b>慢慢屈肘，胸部向墙面靠近。手肘与身体约呈 45° 角（不要张开成 90°）。头部自然前移，保持身体一条直线。</div>
+                <div class="wo-step"><b>③ 呼气推起：</b>胸部轻触墙面后，用胸肌和手臂力量将身体推回起始位置。全程腹部收紧，不要塌腰撅臀。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>手肘外展太开（伤肩膀）、塌腰撅臀（腰部代偿）、只靠手臂推（没用胸肌发力）。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo1',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 2. 臀桥 -->
+          <div class="workout-card" data-id="wo2" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🍑</span><div class="wo-info"><div class="wo-name">臀桥</div><div class="wo-reps">15 次 · 翘臀必练</div><div class="wo-muscles">💪 臀部 / 大腿后侧</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo2">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🛌<br>↗️<br>📐<br>↘️<br>🛌</div><div class="wo-pose-desc"><b>动作轨迹：</b>仰卧屈膝 → 臀部发力向上顶起 → 身体成桥形（肩-臀-膝成直线）→ 缓慢下落<br><span style="color:var(--blue);">💡 女生翘臀黄金动作，躺着就能做</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>仰卧在瑜伽垫或床上，双膝弯曲，双脚平放地面，脚跟离臀部约一脚掌距离。双臂自然放身体两侧。</div>
+                <div class="wo-step"><b>② 呼气顶起：</b>用臀部力量（不是腰部！）将骨盆向上抬起，直到肩膀、臀部、膝盖形成一条直线。在最高点停留 1-2 秒，感受臀部收紧。</div>
+                <div class="wo-step"><b>③ 吸气下落：</b>缓慢控制地落下臀部，回到起始位置，但不要完全放松（保持臀部轻微离地，持续紧张）。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>腰部过度拱起（腰酸说明做错了，应该是臀酸）、膝盖向外打开太宽（保持与髋同宽）、用腰部发力而非臀部。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo2',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 3. 徒手深蹲 -->
+          <div class="workout-card" data-id="wo3" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🦵</span><div class="wo-info"><div class="wo-name">徒手深蹲</div><div class="wo-reps">15 次 · 下肢塑形</div><div class="wo-muscles">💪 大腿 / 臀部</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo3">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🧍<br>↓<br>🪑<br>↑<br>🧍</div><div class="wo-pose-desc"><b>动作轨迹：</b>站立 → 臀部向后坐（像坐椅子）→ 大腿与地面平行 → 站起<br><span style="color:var(--blue);">💡 想象身后有一把椅子，屁股去够椅子边</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>双脚开立与肩同宽或略宽，脚尖自然外展约 15-30°。挺胸收腹，双手可胸前抱拳或自然前伸保持平衡。</div>
+                <div class="wo-step"><b>② 吸气下蹲：</b>臀部先向后推（像要坐椅子），然后屈膝下蹲。膝盖始终朝向脚尖方向，不要内扣。下蹲至大腿与地面平行即可（初学者可浅蹲）。</div>
+                <div class="wo-step"><b>③ 呼气站起：</b>脚跟踩实地面，用大腿和臀部力量站起。站直时膝盖微屈（不要完全锁死）。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>膝盖内扣（最容易受伤！）、弯腰驼背（背部要挺直）、踮脚尖（重心应在脚后跟）、蹲太深导致腰部弓起。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo3',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 4. 跪姿平板支撑 -->
+          <div class="workout-card" data-id="wo4" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🧎</span><div class="wo-info"><div class="wo-name">跪姿平板支撑</div><div class="wo-reps">30 秒 · 核心入门</div><div class="wo-muscles">💪 腹部 / 腰部</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo4">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🧎<br>━<br>📏<br>━<br>🦶</div><div class="wo-pose-desc"><b>动作轨迹：</b>俯卧 → 前臂撑地 → 双膝跪地 → 身体成一条直线 → 保持不动<br><span style="color:var(--blue);">💡 标准平板支撑的降阶版，保护腰部不伤膝盖</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>俯卧在垫子上，前臂平放地面，手肘在肩膀正下方。双膝着地，小腿交叉抬起（或脚尖点地）。</div>
+                <div class="wo-step"><b>② 撑起身体：</b>收腹将身体抬起，从肩膀到膝盖成一条直线。臀部不要翘高也不要塌下去，像一块平板。</div>
+                <div class="wo-step"><b>③ 保持呼吸：</b>正常呼吸，不要憋气！眼睛看地面，颈部放松。坚持 30 秒，感受腹部持续收紧。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>塌腰（腰部酸痛说明核心没收紧，立刻停下调整）、撅臀（臀部抬太高）、憋气（保持自然呼吸）。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo4',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 5. 卷腹 -->
+          <div class="workout-card" data-id="wo5" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🤸</span><div class="wo-info"><div class="wo-name">卷腹</div><div class="wo-reps">12 次 · 上腹雕刻</div><div class="wo-muscles">💪 上腹部</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo5">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🛌<br>↗️<br>😐<br>↘️<br>🛌</div><div class="wo-pose-desc"><b>动作轨迹：</b>仰卧 → 腹部发力抬起肩胛骨 → 缓慢落下<br><span style="color:var(--blue);">💡 不是仰卧起坐！只抬肩胛骨，腰部始终贴地</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>仰卧屈膝，双脚踩地。双手轻放耳旁（不要抱头！），手肘向两侧打开。下巴微收，眼睛看天花板。</div>
+                <div class="wo-step"><b>② 呼气卷起：</b>用腹部力量将肩胛骨抬离地面（约 30-45°），腰部始终贴紧地面。感受上腹部收缩，停顿 1 秒。</div>
+                <div class="wo-step"><b>③ 吸气回落：</b>缓慢控制地落下，但不要完全放松（保持腹部持续紧张）。重复 12 次。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>双手抱头拉脖子（颈椎受伤！）、腰部离地（说明抬太高了，只抬肩胛骨即可）、借助惯性猛起猛落。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo5',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 6. 侧卧抬腿 -->
+          <div class="workout-card" data-id="wo6" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🦩</span><div class="wo-info"><div class="wo-name">侧卧抬腿</div><div class="wo-reps">每侧 10 次 · 侧腰+臀中肌</div><div class="wo-muscles">💪 侧腹 / 臀中肌</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo6">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🛌<br>↗️<br>🦵<br>↘️<br>🛌</div><div class="wo-pose-desc"><b>动作轨迹：</b>侧卧 → 上方腿伸直向上抬起 → 缓慢落下 → 换边<br><span style="color:var(--blue);">💡 改善假胯宽、练出侧腰线条的宝藏动作</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>侧卧在垫子上，下方手臂弯曲垫在头下，上方手撑地保持平衡。双腿伸直叠放，上方腿略微前移约 30°。</div>
+                <div class="wo-step"><b>② 呼气抬起：</b>用臀部外侧（臀中肌）力量将上方腿向上抬起，抬到约 45° 即可。感受侧腰和臀部外侧发力，不要借助惯性。</div>
+                <div class="wo-step"><b>③ 吸气落下：</b>缓慢控制地落下，但不要碰到下方腿（保持肌肉持续紧张）。每侧做 10 次，然后换边。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>身体前后晃动（核心要稳住）、借助惯性甩腿（动作要慢）、抬腿角度太大（45° 足够，过高会翻胯）。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo6',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 7. 后踢腿 -->
+          <div class="workout-card" data-id="wo7" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🦘</span><div class="wo-info"><div class="wo-name">后踢腿</div><div class="wo-reps">每侧 12 次 · 翘臀专项</div><div class="wo-muscles">💪 臀大肌</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo7">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🐕<br>↗️<br>🦶<br>↘️<br>🐕</div><div class="wo-pose-desc"><b>动作轨迹：</b>四点跪姿 → 单腿屈膝向后上方抬起 → 顶峰收缩 → 缓慢下落 → 换边<br><span style="color:var(--blue);">💡 跪姿版臀桥，更孤立地刺激臀部</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>四点跪姿（双手在肩下，双膝在髋下）。背部平直，核心收紧，目视地面。</div>
+                <div class="wo-step"><b>② 呼气抬起：</b>保持屈膝 90°，用臀部力量将腿向后上方抬起。抬到膝盖与臀部同高即可，不要过度翻转骨盆。</div>
+                <div class="wo-step"><b>③ 顶峰收缩：</b>在最高点停留 1-2 秒，感受臀部收紧。然后缓慢控制地落下，膝盖轻触地面即开始下一次。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>腰部塌陷（核心没收紧）、腿抬太高翻胯（骨盆翻转说明太高了）、借助惯性快速甩腿。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo7',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 8. 靠墙静蹲 -->
+          <div class="workout-card" data-id="wo8" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🪑</span><div class="wo-info"><div class="wo-name">靠墙静蹲</div><div class="wo-reps">30 秒 · 膝盖友好</div><div class="wo-muscles">💪 大腿前侧</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo8">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🧍<br>↓<br>📐<br>🪑<br>⏱️</div><div class="wo-pose-desc"><b>动作轨迹：</b>背靠墙站立 → 缓慢下滑至大腿与地面平行 → 保持不动<br><span style="color:var(--blue);">💡 静态动作，对膝盖压力小，适合膝盖敏感的姐妹</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>背靠墙站立，双脚向前迈出约两步距离，双脚与肩同宽。后脑勺、上背部、臀部贴墙。</div>
+                <div class="wo-step"><b>② 缓慢下滑：</b>背部贴墙，慢慢向下滑，直到大腿与地面平行（像坐在看不见的椅子上）。膝盖在脚踝正上方，不要超出脚尖太多。</div>
+                <div class="wo-step"><b>③ 静态保持：</b>保持这个姿势 30 秒。大腿前侧会有明显的酸胀感（这是对的！）。保持正常呼吸，不要憋气。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>膝盖超过脚尖太远（伤膝盖，应保持在脚踝上方）、腰部离墙（背部要始终贴墙）、蹲太浅（大腿要接近平行地面）。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo8',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 9. 鸟狗式 -->
+          <div class="workout-card" data-id="wo9" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🐦</span><div class="wo-info"><div class="wo-name">鸟狗式</div><div class="wo-reps">每侧 10 次 · 核心稳定</div><div class="wo-muscles">💪 背部 / 核心</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo9">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🐕<br>✋🦶<br>⏸️<br>✋🦶<br>🐕</div><div class="wo-pose-desc"><b>动作轨迹：</b>四点跪姿 → 同时伸出对侧手臂和腿 → 保持平衡 2 秒 → 换边<br><span style="color:var(--blue);">💡 同时练核心、背、臀，还能改善体态和平衡</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>四点跪姿，双手在肩膀正下方，双膝在髋部正下方。背部平直，不要塌腰或拱背。</div>
+                <div class="wo-step"><b>② 伸展对侧：</b>吸气，同时向前伸出右臂、向后伸出左腿，直到它们与地面平行。保持身体稳定，不要翻转。</div>
+                <div class="wo-step"><b>③ 保持与收回：</b>在伸展位置停留 2 秒，感受核心收紧。然后呼气，缓慢收回手臂和腿。换另一侧重复，每侧 10 次。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>身体翻转（核心没收紧）、塌腰（腹部要持续发力）、动作太快（越慢越能锻炼稳定性）、手脚抬太高（与地面平行即可）。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo9',this)">✅ 标记完成</button>
+          </div>
+
+          <!-- 10. 开合跳 -->
+          <div class="workout-card" data-id="wo10" onclick="toggleWorkoutDetail(this)"><span class="wo-emoji">🏃</span><div class="wo-info"><div class="wo-name">开合跳</div><div class="wo-reps">20 次 · 全身热身</div><div class="wo-muscles">💪 全身 / 心肺</div></div><span class="wo-check">✅</span><span class="wo-arrow">▼</span></div>
+          <div class="workout-detail" data-detail="wo10">
+            <div class="wo-detail-body">
+              <div class="wo-diagram"><div class="wo-pose">🧍<br>↔️↕️<br>⭐<br>↔️↕️<br>🧍</div><div class="wo-pose-desc"><b>动作轨迹：</b>站立 → 跳起双脚分开同时双手上举击掌 → 跳回站立<br><span style="color:var(--blue);">💡 经典有氧动作，提升心率，激活全身</span></div></div>
+              <div class="wo-steps">
+                <div class="wo-step"><b>① 起始姿势：</b>站立，双脚并拢，双手自然下垂于身体两侧。挺胸收腹，目视前方。</div>
+                <div class="wo-step"><b>② 跳起分开：</b>轻轻跳起，双脚向两侧分开（略宽于肩），同时双手从身体两侧向上举起并在头顶击掌。</div>
+                <div class="wo-step"><b>③ 跳回合拢：</b>再次轻轻跳起，双脚并拢回到起始位置，同时双手落回身体两侧。保持节奏均匀，落地轻盈。</div>
+              </div>
+              <div class="wo-mistake">⚠️ <b>常见错误：</b>落地太重（应前脚掌着地，膝盖微屈缓冲）、手臂没有举直（要举过头顶击掌）、节奏忽快忽慢。</div>
+            </div>
+            <button class="wo-done-btn" onclick="event.stopPropagation(); markWorkoutDone('wo10',this)">✅ 标记完成</button>
+          </div>
         </div>
-        <div class="workout-tip">💡 <strong>训练建议：</strong>每个动作做 2-3 组，组间休息 30 秒。动作要标准缓慢，不求快。完成 10 个动作即达成今日任务！<br>🔄 每天自动重置，坚持就是胜利 💪</div>
+        <div class="workout-tip">💡 <strong>训练建议：</strong>动作先做标准，再追求数量。每个动作可按自己的能力做 1-2 组，组间休息 30-60 秒。感觉累了就休息，不要勉强！<br>🔄 每天自动重置，坚持 21 天养成运动习惯 💪</div>
       </div>
     </section>
 
@@ -879,7 +1037,7 @@ const pageMeta={
   kids:{t:'幼儿英语',s:'4岁宝宝 · 启蒙打卡'},
   adult:{t:'每日英语',s:'30+成人 · 30min美剧+日常对话 · 3月通关计划'},
   xhs:{t:'爆款文案',s:'迪士尼 · 小红书卖货'},
-  workout:{t:'运动打卡',s:'每日抗阻训练 · 10个动作 · 点一下完成'}
+  workout:{t:'运动打卡',s:'女生初学者 · 10个低难度抗阻动作 · 点开看图解'}
 };
 const STOCK=['ashare','overnight','usnight','macro','evening'];
 
@@ -945,16 +1103,21 @@ function setupWorkout(){
   const key=woKey();
   document.querySelectorAll('#woGrid .workout-card').forEach(el=>{
     const id=el.dataset.id;
-    if(localStorage.getItem('joya_'+key+'_'+id)==='1') el.classList.add('done');
-    el.dataset.done=(el.classList.contains('done')?'1':'0');
+    const done=localStorage.getItem('joya_'+key+'_'+id)==='1';
+    if(done){ el.classList.add('done'); }
+    el.dataset.done=done?'1':'0';
+    // sync detail panel
+    const detail=document.querySelector('.workout-detail[data-detail="'+id+'"]');
+    if(detail){ if(done) detail.classList.add('done'); else detail.classList.remove('done'); }
+    const btn=detail?detail.querySelector('.wo-done-btn'):null;
+    if(btn){ if(done){ btn.classList.add('done'); btn.textContent='✅ 已完成（点击取消）'; }else{ btn.classList.remove('done'); btn.textContent='✅ 标记完成'; } }
   });
-  // streak & total stats (persisted, keyed by workout history)
+  // streak & total stats
   const histKey='joya_wo_hist';
   let hist={};
   try{ hist=JSON.parse(localStorage.getItem(histKey)||'{}'); }catch(e){ hist={}; }
   if(!hist[key]){ hist[key]=[]; try{ localStorage.setItem(histKey,JSON.stringify(hist)); }catch(e){} }
   const doneKeys=Object.keys(hist).filter(k=>hist[k].length===10);
-  // streak: consecutive days ending today (or yesterday if today not yet complete)
   const days=[];
   for(let i=0;i<400;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); days.push(k); }
   let streak=0;
@@ -965,13 +1128,28 @@ function setupWorkout(){
   document.getElementById('woTotal').textContent=doneKeys.length;
   updateWorkoutProgress();
 }
-function toggleWorkout(el){
+function toggleWorkoutDetail(card){
+  const id=card.dataset.id;
+  const detail=document.querySelector('.workout-detail[data-detail="'+id+'"]');
+  if(!detail) return;
+  const isOpen=detail.classList.contains('open');
+  // close all others
+  document.querySelectorAll('.workout-detail.open').forEach(d=>{ d.classList.remove('open'); const c=document.querySelector('.workout-card[data-id="'+d.dataset.detail+'"]'); if(c) c.classList.remove('expanded'); });
+  if(!isOpen){ detail.classList.add('open'); card.classList.add('expanded'); }
+}
+function markWorkoutDone(id,btn){
   const key=woKey();
-  const id=el.dataset.id;
-  const nowDone=el.classList.toggle('done');
+  const card=document.querySelector('.workout-card[data-id="'+id+'"]');
+  if(!card) return;
+  const nowDone=!card.classList.contains('done');
+  card.classList.toggle('done');
   localStorage.setItem('joya_'+key+'_'+id, nowDone?'1':'0');
-  el.dataset.done=nowDone?'1':'0';
-  // update history record
+  card.dataset.done=nowDone?'1':'0';
+  // sync detail panel
+  const detail=document.querySelector('.workout-detail[data-detail="'+id+'"]');
+  if(detail){ if(nowDone) detail.classList.add('done'); else detail.classList.remove('done'); }
+  if(btn){ if(nowDone){ btn.classList.add('done'); btn.textContent='✅ 已完成（点击取消）'; }else{ btn.classList.remove('done'); btn.textContent='✅ 标记完成'; } }
+  // update history
   const histKey='joya_wo_hist';
   let hist={};
   try{ hist=JSON.parse(localStorage.getItem(histKey)||'{}'); }catch(e){ hist={}; }
@@ -982,10 +1160,9 @@ function toggleWorkout(el){
   if(!nowDone && idx>-1) arr.splice(idx,1);
   try{ localStorage.setItem(histKey,JSON.stringify(hist)); }catch(e){}
   updateWorkoutProgress();
-  // celebrate when all 10 done
+  // celebrate
   const done=document.querySelectorAll('#woGrid .workout-card.done').length;
   if(done===10){
-    // update streak/total immediately
     let streak=0;
     const days=[];
     for(let i=0;i<400;i++){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()); }
