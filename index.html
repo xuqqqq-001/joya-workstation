@@ -179,6 +179,26 @@
   .check-progress{ font-size:12px; color:var(--text-secondary); margin-bottom:10px; }
   .check-progress b{ color:var(--accent); }
 
+  /* ===== WORKOUT ===== */
+  .workout-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-bottom:14px; }
+  .workout-card{ padding:14px 10px; border-radius:10px; background:#fff; border:2px solid var(--border); text-align:center; cursor:pointer; transition:all .15s; user-select:none; position:relative; }
+  .workout-card:active{ transform:scale(.96); }
+  .workout-card.done{ background:#f0fdf4; border-color:#4ade80; }
+  .workout-card .wo-emoji{ font-size:28px; display:block; margin-bottom:5px; }
+  .workout-card .wo-name{ font-size:13px; font-weight:700; color:var(--text); }
+  .workout-card .wo-reps{ font-size:11px; color:var(--text-secondary); margin-top:3px; }
+  .workout-card .wo-check{ position:absolute; top:6px; right:8px; font-size:18px; opacity:0; transition:opacity .15s; }
+  .workout-card.done .wo-check{ opacity:1; }
+  .workout-card.done .wo-name{ color:var(--green-up); }
+  .workout-progress{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .workout-progress-bar{ flex:1; height:8px; border-radius:4px; background:var(--border); overflow:hidden; }
+  .workout-progress-fill{ height:100%; background:linear-gradient(90deg,#4ade80,#22c55e); border-radius:4px; transition:width .3s ease; width:0; }
+  .workout-progress-text{ font-size:13px; font-weight:700; color:var(--accent); white-space:nowrap; }
+  .workout-stats{ display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--text-secondary); }
+  .workout-stats .stat{ background:#fafafa; padding:8px 12px; border-radius:8px; border:1px solid var(--border); }
+  .workout-stats .stat b{ color:var(--text); font-size:14px; }
+  .workout-tip{ padding:10px 14px; border-radius:9px; background:#fff7ed; border:1px solid #fed7aa; font-size:12.5px; line-height:1.7; color:#9a3412; margin-top:10px; }
+
   .footer-note{ text-align:center; padding:16px; font-size:11px; color:#b8b8b8; }
 
   /* ===== MOBILE SUBTABS ===== */
@@ -240,6 +260,9 @@
     </div>
     <div class="nav-item" data-panel="xhs" onclick="selectPanel(this)">
       <span class="ico">🏰</span><span class="lbl">爆款文案</span>
+    </div>
+    <div class="nav-item" data-panel="workout" onclick="selectPanel(this)">
+      <span class="ico">💪</span><span class="lbl">运动打卡</span>
     </div>
   </nav>
   <div class="sidebar-footer">数据每日自动更新<br>仅供参考 · JOYA v4.1</div>
@@ -747,6 +770,35 @@
       </div>
     </section>
 
+    <!-- ===== 运动打卡 ===== -->
+    <section class="panel" id="panel-workout">
+      <div class="card">
+        <div class="card-title"><span class="bar"></span>💪 今日抗阻训练 · 点一下完成</div>
+        <div class="workout-progress">
+          <div class="workout-progress-bar"><div class="workout-progress-fill" id="woFill"></div></div>
+          <div class="workout-progress-text" id="woProgress">0 / 10</div>
+        </div>
+        <div class="workout-stats" style="margin-bottom:14px;">
+          <span class="stat">🔥 今日完成 <b id="woDone">0</b> 个动作</span>
+          <span class="stat">📅 已坚持 <b id="woStreak">0</b> 天</span>
+          <span class="stat">🏅 累计完成 <b id="woTotal">0</b> 次</span>
+        </div>
+        <div class="workout-grid" id="woGrid">
+          <div class="workout-card" data-id="wo1" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🏃</span><div class="wo-name">开合跳</div><div class="wo-reps">30 次</div></div>
+          <div class="workout-card" data-id="wo2" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🙇</span><div class="wo-name">俯卧撑</div><div class="wo-reps">12 次</div></div>
+          <div class="workout-card" data-id="wo3" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🦵</span><div class="wo-name">深蹲</div><div class="wo-reps">20 次</div></div>
+          <div class="workout-card" data-id="wo4" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🧍</span><div class="wo-name">平板支撑</div><div class="wo-reps">40 秒</div></div>
+          <div class="workout-card" data-id="wo5" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🤸</span><div class="wo-name">卷腹</div><div class="wo-reps">15 次</div></div>
+          <div class="workout-card" data-id="wo6" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🏋️</span><div class="wo-name">高抬腿</div><div class="wo-reps">40 次</div></div>
+          <div class="workout-card" data-id="wo7" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">💪</span><div class="wo-name">臂屈伸</div><div class="wo-reps">10 次</div></div>
+          <div class="workout-card" data-id="wo8" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🚶</span><div class="wo-name">弓步蹲</div><div class="wo-reps">每腿 10 次</div></div>
+          <div class="workout-card" data-id="wo9" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">🍑</span><div class="wo-name">臀桥</div><div class="wo-reps">15 次</div></div>
+          <div class="workout-card" data-id="wo10" onclick="toggleWorkout(this)"><span class="wo-check">✅</span><span class="wo-emoji">⚡</span><div class="wo-name">波比跳</div><div class="wo-reps">8 次</div></div>
+        </div>
+        <div class="workout-tip">💡 <strong>训练建议：</strong>每个动作做 2-3 组，组间休息 30 秒。动作要标准缓慢，不求快。完成 10 个动作即达成今日任务！<br>🔄 每天自动重置，坚持就是胜利 💪</div>
+      </div>
+    </section>
+
     <div class="footer-note">本工作台仅供个人参考，不构成任何投资建议 ｜ JOYA Workstation v4.1</div>
   </div>
 </div>
@@ -825,7 +877,8 @@ const pageMeta={
   evening:{t:'晚间国内要闻',s:'每日自动提炼 · 盘前速览'},
   kids:{t:'幼儿英语',s:'4岁宝宝 · 启蒙打卡'},
   adult:{t:'每日英语',s:'30+成人 · 30min美剧+日常对话 · 3月通关计划'},
-  xhs:{t:'爆款文案',s:'迪士尼 · 小红书卖货'}
+  xhs:{t:'爆款文案',s:'迪士尼 · 小红书卖货'},
+  workout:{t:'运动打卡',s:'每日抗阻训练 · 10个动作 · 点一下完成'}
 };
 const STOCK=['ashare','overnight','usnight','macro','evening'];
 
@@ -885,11 +938,89 @@ function updateProgress(){
   });
 }
 
+// ===== DAILY WORKOUT (10 moves, tap to complete, resets daily) =====
+function woKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function setupWorkout(){
+  const key=woKey();
+  document.querySelectorAll('#woGrid .workout-card').forEach(el=>{
+    const id=el.dataset.id;
+    if(localStorage.getItem('joya_'+key+'_'+id)==='1') el.classList.add('done');
+    el.dataset.done=(el.classList.contains('done')?'1':'0');
+  });
+  // streak & total stats (persisted, keyed by workout history)
+  const histKey='joya_wo_hist';
+  let hist={};
+  try{ hist=JSON.parse(localStorage.getItem(histKey)||'{}'); }catch(e){ hist={}; }
+  if(!hist[key]){ hist[key]=[]; try{ localStorage.setItem(histKey,JSON.stringify(hist)); }catch(e){} }
+  const doneKeys=Object.keys(hist).filter(k=>hist[k].length===10);
+  // streak: consecutive days ending today (or yesterday if today not yet complete)
+  const days=[];
+  for(let i=0;i<400;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); days.push(k); }
+  let streak=0;
+  const todayDone=hist[key]&&hist[key].length===10;
+  const start=todayDone?0:1;
+  for(let i=start;i<days.length;i++){ if(hist[days[i]]&&hist[days[i]].length===10) streak++; else break; }
+  document.getElementById('woStreak').textContent=streak;
+  document.getElementById('woTotal').textContent=doneKeys.length;
+  updateWorkoutProgress();
+}
+function toggleWorkout(el){
+  const key=woKey();
+  const id=el.dataset.id;
+  const nowDone=el.classList.toggle('done');
+  localStorage.setItem('joya_'+key+'_'+id, nowDone?'1':'0');
+  el.dataset.done=nowDone?'1':'0';
+  // update history record
+  const histKey='joya_wo_hist';
+  let hist={};
+  try{ hist=JSON.parse(localStorage.getItem(histKey)||'{}'); }catch(e){ hist={}; }
+  if(!hist[key]) hist[key]=[];
+  const arr=hist[key];
+  const idx=arr.indexOf(id);
+  if(nowDone && idx===-1) arr.push(id);
+  if(!nowDone && idx>-1) arr.splice(idx,1);
+  try{ localStorage.setItem(histKey,JSON.stringify(hist)); }catch(e){}
+  updateWorkoutProgress();
+  // celebrate when all 10 done
+  const done=document.querySelectorAll('#woGrid .workout-card.done').length;
+  if(done===10){
+    // update streak/total immediately
+    let streak=0;
+    const days=[];
+    for(let i=0;i<400;i++){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()); }
+    for(let i=0;i<days.length;i++){ if(hist[days[i]]&&hist[days[i]].length===10) streak++; else break; }
+    document.getElementById('woStreak').textContent=streak;
+    document.getElementById('woTotal').textContent=Object.keys(hist).filter(k=>hist[k].length===10).length;
+    if(!document.getElementById('woCelebrate')){
+      const tip=document.querySelector('#panel-workout .workout-tip');
+      const el2=document.createElement('div');
+      el2.id='woCelebrate';
+      el2.style.cssText='margin-top:10px;padding:14px;border-radius:9px;background:#f0fdf4;border:1px solid #86efac;color:#166534;font-size:13.5px;font-weight:700;text-align:center;';
+      el2.textContent='🎉 太棒了！今日10个动作全部完成！';
+      tip.parentNode.insertBefore(el2, tip.nextSibling);
+    }
+  }else{
+    const cel=document.getElementById('woCelebrate');
+    if(cel) cel.remove();
+  }
+}
+function updateWorkoutProgress(){
+  const items=document.querySelectorAll('#woGrid .workout-card');
+  const total=items.length;
+  const done=document.querySelectorAll('#woGrid .workout-card.done').length;
+  const fill=document.getElementById('woFill');
+  const txt=document.getElementById('woProgress');
+  const num=document.getElementById('woDone');
+  if(fill) fill.style.width=(total? (done/total*100):0)+'%';
+  if(txt) txt.textContent=done+' / '+total+(done===total?' 🎉':'');
+  if(num) num.textContent=done;
+}
+
 // ===== INIT =====
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',()=>{ attachSpeakers(); setupChecklist(); });
+  document.addEventListener('DOMContentLoaded',()=>{ attachSpeakers(); setupChecklist(); setupWorkout(); });
 }else{
-  attachSpeakers(); setupChecklist();
+  attachSpeakers(); setupChecklist(); setupWorkout();
 }
 
 // ===== REGISTER SERVICE WORKER (PWA) =====
